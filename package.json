@@ -1,0 +1,14 @@
+{
+  "name": "socketflux",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "author": {
+    "name": "Zev Stravitz",
+    "email": "zevstravitz@verizon.net",
+    "url": "https://zev.dev"
+  },
+  "dependencies": {
+    "@types/node": "^18.7.18"
+  }
+}
