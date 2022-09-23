@@ -1,19 +1,17 @@
-import http from "http";
 import https from "https";
+import shimmer from "shimmer";
+
+shimmer.wrap(https, "request", (original) => {
+  return () => {
+    console.log("Starting request!");
+    var returned = original.apply(this, original.arguments);
+    console.log("Done setting up request -- OH YEAH!");
+    return returned;
+  };
+});
 
 const initializeFluxClient = (privateToken: string) => {
   console.log(privateToken);
 };
-
-function fluxWrapper(httpModule: typeof https) {
-  var original = httpModule.request as any;
-
-  httpModule.request = function (options, callback): http.ClientRequest {
-    console.log(options);
-    return original(options, callback);
-  };
-}
-
-fluxWrapper(https);
 
 export default initializeFluxClient;
