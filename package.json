@@ -14,7 +14,6 @@
   "dependencies": {
     "@types/node": "^18.7.18",
     "has-value": "^2.0.2",
-    "pino": "^8.6.0",
     "shimmer": "^1.2.1"
   },
   "devDependencies": {
