@@ -14,9 +14,11 @@
   "dependencies": {
     "@types/node": "^18.7.18",
     "has-value": "^2.0.2",
+    "luxon": "^3.0.3",
     "shimmer": "^1.2.1"
   },
   "devDependencies": {
+    "@types/luxon": "^3.0.1",
     "@types/shimmer": "^1.0.2",
     "typescript": "^4.8.3"
   }

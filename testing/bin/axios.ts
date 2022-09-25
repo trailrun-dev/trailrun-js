@@ -6,6 +6,6 @@ const delay = (ms: number | undefined) =>
 
 threepointer("dev-1234");
 
-axios.get("https://zev.dev").then((res) => console.info(res.data));
+axios.get("https://zev.dev?testing=2"); //.then((res) => console.info(res.data));
 
 delay(10000);

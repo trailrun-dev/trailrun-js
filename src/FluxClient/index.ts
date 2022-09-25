@@ -1,4 +1,3 @@
-import https from "https";
 import { LoggedCallPayload } from "./types";
 
 class FluxClient {
@@ -15,15 +14,7 @@ class FluxClient {
 
   send() {
     console.log("Sending payload to flux");
-    https
-      .get("https://jsonplaceholder.typicode.com/todos/1", (res) => {
-        res.on("data", (d) => {
-          process.stdout.write(d);
-        });
-      })
-      .on("error", (e) => {
-        console.error(e);
-      });
+    console.log(this.loggedCallPayload);
   }
 }
 

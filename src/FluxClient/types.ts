@@ -4,13 +4,16 @@ type LoggedCallPayload = {
     headers: string;
     pathname: string;
     hostname: string;
+    search: string | undefined;
   };
   response?: {
     statusCode: string;
     headers: string;
     message: string;
+    body: string;
   };
-  responseTime?: string;
+  callAt?: string;
+  latency?: string;
 };
 
 export type { LoggedCallPayload };
