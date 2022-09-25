@@ -1,10 +1,10 @@
 import https from "https";
 import { DateTime } from "luxon";
 import shimmer from "shimmer";
-import { FluxClient } from "./src";
+import TrailrunClient from "./src/TrailrunClient";
 const has = require("has-value");
 
-var fluxClient: FluxClient;
+var trailrunClient: TrailrunClient;
 
 shimmer.wrap(https, "request", function (original) {
   return function (this: any) {
@@ -12,7 +12,7 @@ shimmer.wrap(https, "request", function (original) {
     const { method, headers, hostname, pathname, search } = arguments[0];
 
     let callAt = DateTime.now();
-    fluxClient.set("request", {
+    trailrunClient.set("request", {
       method,
       headers,
       pathname,
@@ -32,21 +32,21 @@ shimmer.wrap(https, "request", function (original) {
 
           response.on("end", () => {
             const { statusCode, headers, message } = response;
-            fluxClient.set("response", {
+            trailrunClient.set("response", {
               statusCode,
               headers,
               message,
               body,
             });
 
-            fluxClient.set("callAt", callAt.toISO());
-            fluxClient.set(
+            trailrunClient.set("callAt", callAt.toISO());
+            trailrunClient.set(
               "latency",
               (DateTime.now().toMillis() - callAt.toMillis()).toString()
             );
 
             // Send fake request
-            fluxClient.send();
+            trailrunClient.send();
           });
         }
       }
@@ -57,8 +57,8 @@ shimmer.wrap(https, "request", function (original) {
   };
 });
 
-const initializeFluxClient = (privateToken: string) => {
-  fluxClient = new FluxClient(privateToken);
+const initializeTrailrunClient = (privateToken: string) => {
+  trailrunClient = new TrailrunClient(privateToken);
 };
 
-export default initializeFluxClient;
+export default initializeTrailrunClient;

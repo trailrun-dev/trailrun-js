@@ -1,6 +1,6 @@
 import { LoggedCallPayload } from "./types";
 
-class FluxClient {
+class TrailrunClient {
   loggedCallPayload: LoggedCallPayload = {};
   developerToken: string | null = null;
 
@@ -13,9 +13,8 @@ class FluxClient {
   }
 
   send() {
-    console.log("Sending payload to flux");
-    console.log(this.loggedCallPayload);
+    // post request to TrailRun
   }
 }
 
-export { FluxClient };
+export default TrailrunClient;
