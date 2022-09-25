@@ -1,7 +1,7 @@
 import https from "https";
 import { DateTime } from "luxon";
 import shimmer from "shimmer";
-import TrailrunClient from "./src/TrailrunClient";
+import TrailrunClient from "./src/client";
 const has = require("has-value");
 
 var trailrunClient: TrailrunClient;
