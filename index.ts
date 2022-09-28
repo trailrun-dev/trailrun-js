@@ -9,16 +9,20 @@ var trailrunClient: TrailrunClient;
 shimmer.wrap(https, "request", function (original) {
   return function (this: any) {
     var req = original.apply(this, arguments as any);
-    const { method, headers, hostname, pathname, search } = arguments[0];
+    const { method, headers, hostname, pathname, search, protocol } =
+      arguments[0];
+    if (protocol !== "https:") {
+      return req;
+    }
 
     let callAt = DateTime.now();
-    trailrunClient.set("request", {
+    trailrunClient.loggedCallPayload.request = {
       method,
       headers,
       pathname,
       hostname,
       search,
-    });
+    };
 
     let body = "";
 
@@ -32,18 +36,17 @@ shimmer.wrap(https, "request", function (original) {
 
           response.on("end", () => {
             const { statusCode, headers, message } = response;
-            trailrunClient.set("response", {
+            trailrunClient.loggedCallPayload.response = {
               statusCode,
               headers,
               message,
               body,
-            });
+            };
 
-            trailrunClient.set("callAt", callAt.toISO());
-            trailrunClient.set(
-              "latency",
-              (DateTime.now().toMillis() - callAt.toMillis()).toString()
-            );
+            trailrunClient.loggedCallPayload.callAt = callAt.toISO();
+            trailrunClient.loggedCallPayload.latency = (
+              DateTime.now().toMillis() - callAt.toMillis()
+            ).toString();
 
             // Send fake request
             trailrunClient.send();

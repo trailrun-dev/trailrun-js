@@ -1,3 +1,4 @@
+import { post } from "../utils/post";
 import { LoggedCallPayload } from "./types";
 
 class TrailrunClient {
@@ -12,8 +13,24 @@ class TrailrunClient {
     this.loggedCallPayload[field] = value;
   }
 
-  send() {
-    // post request to TrailRun
+  async send() {
+    const postData = JSON.stringify(this.loggedCallPayload);
+
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": postData.length,
+        Authorization: `Bearer ${this.developerToken}`,
+      },
+      timeout: 1000, // in ms
+    };
+
+    await post("", options, {
+      // use ngrok to test
+      loggedCallPayload: this.loggedCallPayload,
+      developerToken: this.developerToken,
+    });
   }
 }
 
