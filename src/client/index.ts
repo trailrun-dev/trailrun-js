@@ -15,9 +15,6 @@ class TrailrunClient {
 
   async send() {
     const postData = JSON.stringify(this.loggedCallPayload);
-
-    console.log(JSON.stringify(this.loggedCallPayload, null, 2));
-
     return await fetch("http://localhost:3000/ingest", {
       method: "POST",
       headers: {
