@@ -5,11 +5,7 @@ const shouldLogRequest = (input: {
   hostname: string;
   protocol: string;
 }): boolean => {
-  return (
-    hosts.has(input.hostname) &&
-    input.protocol === "https:" &&
-    input.method === "GET"
-  );
+  return hosts.has(input.hostname) && input.protocol === "https:";
 };
 
 export { shouldLogRequest };

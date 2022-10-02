@@ -9,13 +9,13 @@ type LoggedCallPayload = {
     search: string | undefined;
   };
   response?: {
-    statusCode: string;
+    statusCode: number;
     headers: HeaderType;
     message: string;
     body: string | undefined;
   };
   callAt?: string;
-  latency?: string;
+  latency?: number;
 };
 
 export type { LoggedCallPayload };

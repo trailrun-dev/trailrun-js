@@ -3,8 +3,8 @@ import { DateTime } from "luxon";
 import shimmer from "shimmer";
 import TrailrunClient from "./src/client";
 import { shouldLogRequest } from "./src/client/utils/shouldLogRequest";
-var trailrunClient: TrailrunClient;
 
+var trailrunClient: TrailrunClient;
 shimmer.wrap(https, "request", function (original) {
   return function (this: any) {
     var req = original.apply(this, arguments as any);
@@ -27,7 +27,7 @@ shimmer.wrap(https, "request", function (original) {
 
       let body = "";
 
-      let emit = req.emit;
+      const emit = req.emit;
       req.emit = function (this: any, eventName: any, response: any) {
         try {
           switch (eventName) {
@@ -46,9 +46,8 @@ shimmer.wrap(https, "request", function (original) {
                 };
 
                 trailrunClient.loggedCallPayload.callAt = callAt.toISO();
-                trailrunClient.loggedCallPayload.latency = (
-                  DateTime.now().toMillis() - callAt.toMillis()
-                ).toString();
+                trailrunClient.loggedCallPayload.latency =
+                  DateTime.now().toMillis() - callAt.toMillis();
 
                 // Send fake request
                 trailrunClient.send();

@@ -11,11 +11,13 @@ const port = 8000;
 trailrun("dev-1234");
 
 app.get("/", async (req, res) => {
-  const { status } = await axios.get(
-    "https://jsonplaceholder.typicode.com/todos/1"
-  );
+  try {
+    const { status } = await axios.get("https://api.stripe.com/v1/charges");
+    res.send("Successful Request");
+  } catch {
+    res.send("Failed Request");
+  }
   // console.log("Status Code", status);
-  res.send("Hello World!");
 });
 
 app.listen(port, () => {

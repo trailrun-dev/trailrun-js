@@ -22,9 +22,7 @@ class TrailrunClient {
         "Content-Length": postData.length.toString(),
         Authorization: `Bearer ${this.developerToken}`,
       },
-      body: JSON.stringify({
-        loggedCallPayload: this.loggedCallPayload,
-      }),
+      body: postData,
     });
   }
 }
