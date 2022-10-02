@@ -1,4 +1,4 @@
-import { post } from "../utils/post";
+import fetch from "isomorphic-unfetch";
 import { LoggedCallPayload } from "./types";
 
 class TrailrunClient {
@@ -16,20 +16,18 @@ class TrailrunClient {
   async send() {
     const postData = JSON.stringify(this.loggedCallPayload);
 
-    const options = {
+    console.log(JSON.stringify(this.loggedCallPayload, null, 2));
+
+    return await fetch("http://localhost:3000/ingest", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Content-Length": postData.length,
+        "Content-Length": postData.length.toString(),
         Authorization: `Bearer ${this.developerToken}`,
       },
-      timeout: 1000, // in ms
-    };
-
-    await post("", options, {
-      // use ngrok to test
-      loggedCallPayload: this.loggedCallPayload,
-      developerToken: this.developerToken,
+      body: JSON.stringify({
+        loggedCallPayload: this.loggedCallPayload,
+      }),
     });
   }
 }

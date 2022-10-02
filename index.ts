@@ -1,66 +1,60 @@
-import https from "https";
+import { BatchInterceptor } from "@mswjs/interceptors";
+import { ClientRequestInterceptor } from "@mswjs/interceptors/lib/interceptors/ClientRequest";
+import { FetchInterceptor } from "@mswjs/interceptors/lib/interceptors/Fetch";
+import { XMLHttpRequestInterceptor } from "@mswjs/interceptors/lib/interceptors/XMLHttpRequest";
 import { DateTime } from "luxon";
-import shimmer from "shimmer";
 import TrailrunClient from "./src/client";
-const has = require("has-value");
+import { transformHeaders } from "./src/utils/headers";
 
 var trailrunClient: TrailrunClient;
+const interceptor = new BatchInterceptor({
+  name: "trailrun-interceptor",
+  interceptors: [
+    new ClientRequestInterceptor(),
+    new XMLHttpRequestInterceptor(),
+    new FetchInterceptor(),
+  ],
+});
 
-shimmer.wrap(https, "request", function (original) {
-  return function (this: any) {
-    var req = original.apply(this, arguments as any);
-    const { method, headers, hostname, pathname, search, protocol } =
-      arguments[0];
-    if (protocol !== "https:") {
-      return req;
-    }
+let lastCallDateTime: DateTime;
 
-    let callAt = DateTime.now();
-    trailrunClient.loggedCallPayload.request = {
-      method,
-      headers,
-      pathname,
-      hostname,
-      search,
-    };
+interceptor.on("request", (request) => {
+  const { url, method, headers } = request;
 
-    let body = "";
+  if (request.url.protocol !== "https:") {
+    return;
+  }
 
-    let emit = req.emit;
-    req.emit = function (this: any, eventName: any, response: any) {
-      switch (eventName) {
-        case "response": {
-          response.on("data", (d: any) => {
-            body += d;
-          });
+  lastCallDateTime = DateTime.now();
+  trailrunClient.loggedCallPayload.callAt = lastCallDateTime.toISO();
 
-          response.on("end", () => {
-            const { statusCode, headers, message } = response;
-            trailrunClient.loggedCallPayload.response = {
-              statusCode,
-              headers,
-              message,
-              body,
-            };
-
-            trailrunClient.loggedCallPayload.callAt = callAt.toISO();
-            trailrunClient.loggedCallPayload.latency = (
-              DateTime.now().toMillis() - callAt.toMillis()
-            ).toString();
-
-            // Send fake request
-            trailrunClient.send();
-          });
-        }
-      }
-      return emit.apply(this, arguments as any);
-    } as any;
-
-    return req;
+  trailrunClient.loggedCallPayload.request = {
+    method,
+    headers: transformHeaders(headers),
+    pathname: url.pathname,
+    hostname: url.hostname,
+    search: url.search,
   };
 });
 
+interceptor.on("response", (request, response) => {
+  const { headers, body, status, statusText } = response;
+  trailrunClient.loggedCallPayload.response = {
+    statusCode: status.toString(),
+    headers: transformHeaders(headers),
+    message: statusText,
+    body: body,
+  };
+
+  trailrunClient.loggedCallPayload.latency = (
+    DateTime.now().toMillis() - lastCallDateTime.toMillis()
+  ).toString();
+  // Send fake request
+  trailrunClient.send();
+});
+
 const initializeTrailrunClient = (privateToken: string) => {
+  interceptor.apply();
   trailrunClient = new TrailrunClient(privateToken);
 };
 

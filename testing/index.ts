@@ -11,8 +11,10 @@ const port = 8000;
 trailrun("dev-1234");
 
 app.get("/", async (req, res) => {
-  const { status } = await axios.get("https://zev.dev");
-  console.log("Status Code", status);
+  const { status } = await axios.get(
+    "https://jsonplaceholder.typicode.com/todos/1"
+  );
+  // console.log("Status Code", status);
   res.send("Hello World!");
 });
 
