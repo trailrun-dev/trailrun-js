@@ -1,9 +1,8 @@
+import { fetch } from "cross-fetch";
 import { LogPayload } from "./types";
 
 class TrailrunClient {
-  logPayload: LogPayload = {
-    version: 0,
-  };
+  logPayload: LogPayload = {} as LogPayload;
   clientSecret: string | null = null;
 
   constructor(developerToken: string) {
