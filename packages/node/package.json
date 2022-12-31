@@ -25,5 +25,13 @@
   "directories": {
     "test": "test"
   },
-  "description": ""
+  "description": "Client for nodejs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trailrun-dev/trailrun-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/trailrun-dev/trailrun-client/issues"
+  },
+  "homepage": "https://github.com/trailrun-dev/trailrun-client#readme"
 }

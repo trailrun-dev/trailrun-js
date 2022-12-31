@@ -20,8 +20,8 @@ const logSchema = object({
     message: string(),
     body: string().optional(),
   }).optional(),
-  callAt: string().optional(),
-  latency: number().optional(),
+  callAt: string(),
+  latency: number(),
 });
 
 type LogPayload = z.infer<typeof logSchema>;
