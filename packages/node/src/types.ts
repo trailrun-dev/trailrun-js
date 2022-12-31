@@ -1,4 +1,4 @@
-import { number, object, string, z } from "zod";
+import { literal, number, object, string, z } from "zod";
 
 const headerSchema = object({
   fieldName: string(),
@@ -6,7 +6,7 @@ const headerSchema = object({
 }).array();
 
 const logSchema = object({
-  version: z.enum(["0"]),
+  version: literal(0),
   request: object({
     method: string(),
     headers: headerSchema,

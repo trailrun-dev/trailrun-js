@@ -1,7 +1,9 @@
 import { LogPayload } from "./types";
 
 class TrailrunClient {
-  logPayload: LogPayload = {};
+  logPayload: LogPayload = {
+    version: 0,
+  };
   clientSecret: string | null = null;
 
   constructor(developerToken: string) {
