@@ -1,8 +1,9 @@
 import https from "https";
 import { DateTime } from "luxon";
 import shimmer from "shimmer";
-import TrailrunClient from "./src/client";
-import { transformHeaders } from "./src/utils/headers";
+import TrailrunClient from "./client";
+import { LogPayload } from "./types";
+import { transformHeaders } from "./utils/headers";
 
 var trailrunClient: TrailrunClient;
 shimmer.wrap(https, "request", function (original) {
@@ -13,7 +14,7 @@ shimmer.wrap(https, "request", function (original) {
         arguments[0];
 
       let callAt = DateTime.now();
-      trailrunClient.loggedCallPayload.request = {
+      trailrunClient.logPayload.request = {
         method,
         headers: transformHeaders(headers),
         pathname,
@@ -34,15 +35,15 @@ shimmer.wrap(https, "request", function (original) {
 
               response.on("end", () => {
                 const { statusCode, headers, message } = response;
-                trailrunClient.loggedCallPayload.response = {
+                trailrunClient.logPayload.response = {
                   statusCode,
                   headers: transformHeaders(headers),
                   message,
                   body,
                 };
 
-                trailrunClient.loggedCallPayload.callAt = callAt.toISO();
-                trailrunClient.loggedCallPayload.latency =
+                trailrunClient.logPayload.callAt = callAt.toISO();
+                trailrunClient.logPayload.latency =
                   DateTime.now().toMillis() - callAt.toMillis();
 
                 // Send fake request
@@ -65,3 +66,4 @@ const initializeTrailrunClient = (args: { clientSecret: string }) => {
 };
 
 export default initializeTrailrunClient;
+export { LogPayload };

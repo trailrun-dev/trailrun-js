@@ -1,19 +1,15 @@
-import { LoggedCallPayload } from "./types";
+import { LogPayload } from "./types";
 
 class TrailrunClient {
-  loggedCallPayload: LoggedCallPayload = {};
+  logPayload: LogPayload = {};
   clientSecret: string | null = null;
 
   constructor(developerToken: string) {
     this.clientSecret = developerToken;
   }
 
-  set(field: keyof LoggedCallPayload, value: any) {
-    this.loggedCallPayload[field] = value;
-  }
-
   async send() {
-    const postData = JSON.stringify(this.loggedCallPayload);
+    const postData = JSON.stringify(this.logPayload);
     return await fetch("http://localhost:3000/ingest", {
       method: "POST",
       headers: {

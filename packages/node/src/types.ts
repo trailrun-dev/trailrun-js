@@ -3,7 +3,7 @@ type HeaderType = {
   value: string;
 }[];
 
-type LoggedCallPayload = {
+type LogPayload = {
   request?: {
     method: string;
     headers: HeaderType;
@@ -21,4 +21,4 @@ type LoggedCallPayload = {
   latency?: number;
 };
 
-export type { LoggedCallPayload, HeaderType };
+export type { LogPayload, HeaderType };

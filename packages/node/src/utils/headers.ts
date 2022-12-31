@@ -1,4 +1,4 @@
-import { HeaderType } from "../client/types";
+import { HeaderType } from "../types";
 
 const transformHeaders = (headers: { [key: string]: string }) => {
   let headersArray: HeaderType = [];
