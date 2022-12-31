@@ -46,7 +46,6 @@ shimmer.wrap(https, "request", function (original) {
                 trailrunClient.logPayload.latency =
                   DateTime.now().toMillis() - callAt.toMillis();
 
-                // Send fake request
                 trailrunClient.send();
               });
             }
