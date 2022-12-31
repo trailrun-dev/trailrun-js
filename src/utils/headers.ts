@@ -1,16 +1,12 @@
 import { InteractiveIsomorphicRequest } from "@mswjs/interceptors/src";
-
-type HeaderType = {
-  [key: string]: string;
-};
+import { HeaderType } from "../client/types";
 
 const transformHeaders = (headers: InteractiveIsomorphicRequest["headers"]) => {
-  let headersObj: { [key: string]: string } = {};
+  let headersArray: HeaderType = [];
   headers.forEach((value, key) => {
-    headersObj[key] = value;
+    headersArray.push({ fieldName: key, value: value });
   });
-  return headersObj;
+  return headersArray;
 };
 
-export type { HeaderType };
 export { transformHeaders };

@@ -3,10 +3,10 @@ import { LoggedCallPayload } from "./types";
 
 class TrailrunClient {
   loggedCallPayload: LoggedCallPayload = {};
-  developerToken: string | null = null;
+  clientSecret: string | null = null;
 
   constructor(developerToken: string) {
-    this.developerToken = developerToken;
+    this.clientSecret = developerToken;
   }
 
   set(field: keyof LoggedCallPayload, value: any) {
@@ -20,7 +20,7 @@ class TrailrunClient {
       headers: {
         "Content-Type": "application/json",
         "Content-Length": postData.length.toString(),
-        Authorization: `Bearer ${this.developerToken}`,
+        Authorization: `Bearer ${this.clientSecret}`,
       },
       body: postData,
     });

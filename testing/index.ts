@@ -8,7 +8,7 @@ const logger = require("pino")();
 const app = express();
 const port = 8000;
 
-trailrun("dev-1234");
+trailrun({ clientSecret: "dev-1234" });
 
 app.get("/", async (req, res) => {
   try {

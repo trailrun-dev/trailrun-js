@@ -1,4 +1,7 @@
-import { HeaderType } from "../utils/headers";
+type HeaderType = {
+  fieldName: string;
+  value: string;
+}[];
 
 type LoggedCallPayload = {
   request?: {
@@ -18,4 +21,4 @@ type LoggedCallPayload = {
   latency?: number;
 };
 
-export type { LoggedCallPayload };
+export type { LoggedCallPayload, HeaderType };

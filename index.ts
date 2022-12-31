@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import shimmer from "shimmer";
 import TrailrunClient from "./src/client";
 import { shouldLogRequest } from "./src/client/utils/shouldLogRequest";
+import { transformHeaders } from "./src/utils/headers";
 
 var trailrunClient: TrailrunClient;
 shimmer.wrap(https, "request", function (original) {
@@ -19,7 +20,7 @@ shimmer.wrap(https, "request", function (original) {
       let callAt = DateTime.now();
       trailrunClient.loggedCallPayload.request = {
         method,
-        headers,
+        headers: transformHeaders(headers),
         pathname,
         hostname,
         search,
@@ -40,7 +41,7 @@ shimmer.wrap(https, "request", function (original) {
                 const { statusCode, headers, message } = response;
                 trailrunClient.loggedCallPayload.response = {
                   statusCode,
-                  headers,
+                  headers: transformHeaders(headers),
                   message,
                   body,
                 };
@@ -64,8 +65,8 @@ shimmer.wrap(https, "request", function (original) {
   };
 });
 
-const initializeTrailrunClient = (privateToken: string) => {
-  trailrunClient = new TrailrunClient(privateToken);
+const initializeTrailrunClient = (args: { clientSecret: string }) => {
+  trailrunClient = new TrailrunClient(args.clientSecret);
 };
 
 export default initializeTrailrunClient;
