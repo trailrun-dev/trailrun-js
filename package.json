@@ -9,13 +9,15 @@
     "url": "https://zev.dev"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc"
+    "build": "rm -rf dist && tsc",
+    "test": "vitest __tests__/"
   },
   "dependencies": {
     "@types/node": "^18.7.18",
     "has-value": "^2.0.2",
     "luxon": "^3.0.3",
-    "shimmer": "^1.2.1"
+    "shimmer": "^1.2.1",
+    "vitest": "^0.26.2"
   },
   "devDependencies": {
     "@types/luxon": "^3.0.1",

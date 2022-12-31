@@ -1,4 +1,3 @@
-import fetch from "isomorphic-unfetch";
 import { LoggedCallPayload } from "./types";
 
 class TrailrunClient {

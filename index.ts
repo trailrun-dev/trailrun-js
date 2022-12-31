@@ -2,7 +2,6 @@ import https from "https";
 import { DateTime } from "luxon";
 import shimmer from "shimmer";
 import TrailrunClient from "./src/client";
-import { shouldLogRequest } from "./src/client/utils/shouldLogRequest";
 import { transformHeaders } from "./src/utils/headers";
 
 var trailrunClient: TrailrunClient;
@@ -12,10 +11,6 @@ shimmer.wrap(https, "request", function (original) {
     try {
       const { method, headers, hostname, pathname, search, protocol } =
         arguments[0];
-
-      if (!shouldLogRequest({ method, hostname, protocol })) {
-        return req;
-      }
 
       let callAt = DateTime.now();
       trailrunClient.loggedCallPayload.request = {

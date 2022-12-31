@@ -6,6 +6,11 @@ const delay = (ms: number | undefined) =>
 
 trailrun({ clientSecret: "dev-1234" });
 
-axios.get("https://zev.dev?testing=2"); //.then((res) => console.info(res.data));
+axios.get("https://zev.dev?testing=2", {
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+}); //.then((res) => console.info(res.data));
 
 delay(10000);
