@@ -1,24 +1,31 @@
-type HeaderType = {
-  fieldName: string;
-  value: string;
-}[];
+import { number, object, string, z } from "zod";
 
-type LogPayload = {
-  request?: {
-    method: string;
-    headers: HeaderType;
-    pathname: string;
-    hostname: string;
-    search: string | undefined;
-  };
-  response?: {
-    statusCode: number;
-    headers: HeaderType;
-    message: string;
-    body: string | undefined;
-  };
-  callAt?: string;
-  latency?: number;
-};
+const headerSchema = object({
+  fieldName: string(),
+  fieldValue: string(),
+}).array();
 
-export type { LogPayload, HeaderType };
+const logSchema = object({
+  version: z.enum(["0"]),
+  request: object({
+    method: string(),
+    headers: headerSchema,
+    pathname: string(),
+    hostname: string(),
+    search: string().optional(),
+  }).optional(),
+  response: object({
+    statusCode: number(),
+    headers: headerSchema,
+    message: string(),
+    body: string().optional(),
+  }).optional(),
+  callAt: string().optional(),
+  latency: number().optional(),
+});
+
+type LogPayload = z.infer<typeof logSchema>;
+type HeaderObject = z.infer<typeof headerSchema>;
+
+export type { LogPayload, HeaderObject };
+export { logSchema };

@@ -9,8 +9,8 @@ test("transformHeaders", () => {
     "content-length": "123",
   } as any);
 
-  expect(headerOutput).toBe([
-    { fieldName: "content-type", value: "application/json" },
-    { fieldName: "content-length", value: "123" },
+  expect(headerOutput).toStrictEqual([
+    { fieldName: "content-type", fieldValue: "application/json" },
+    { fieldName: "content-length", fieldValue: "123" },
   ]);
 });

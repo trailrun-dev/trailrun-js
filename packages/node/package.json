@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "author": {
-    "name": "Zev Stravitz",
-    "email": "zevstravitz@verizon.net",
-    "url": "https://zev.dev"
+    "name": "Zev Stravitz"
   },
   "scripts": {
     "build": "rm -rf dist && tsc",
@@ -16,7 +14,8 @@
     "has-value": "^2.0.2",
     "luxon": "^3.0.3",
     "shimmer": "^1.2.1",
-    "vitest": "^0.26.2"
+    "vitest": "^0.26.2",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@types/luxon": "^3.0.1",
