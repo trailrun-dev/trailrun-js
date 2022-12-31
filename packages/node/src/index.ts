@@ -64,5 +64,4 @@ const initializeTrailrunClient = (args: { clientSecret: string }) => {
   trailrunClient = new TrailrunClient(args.clientSecret);
 };
 
-export default initializeTrailrunClient;
-export { LogPayload };
+export { LogPayload, initializeTrailrunClient };
