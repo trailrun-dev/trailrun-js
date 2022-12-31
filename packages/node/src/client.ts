@@ -1,17 +1,21 @@
 import { fetch } from "cross-fetch";
 import { LogPayload } from "./types";
+import { getApiUrl } from "./utils/logUrl";
 
 class TrailrunClient {
   logPayload: LogPayload = {} as LogPayload;
   clientSecret: string | null = null;
+  env: string = "production";
 
-  constructor(developerToken: string) {
-    this.clientSecret = developerToken;
+  constructor(args: { developerToken: string; env: string }) {
+    this.clientSecret = args.developerToken;
+    this.env = args.env;
   }
 
   async send() {
     const postData = JSON.stringify(this.logPayload);
-    return await fetch("http://localhost:3000/ingest", {
+    const baseUrl = getApiUrl(this.env);
+    return await fetch(baseUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

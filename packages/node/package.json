@@ -1,11 +1,12 @@
 {
   "name": "@trailrun/node",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "license": "MIT",
   "author": "Zev Stravitz",
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "test:node": "vitest packages/node/test"
+    "test:node": "vitest packages/node/test",
+    "packagepublish": "pnpm build && npm publish --access public"
   },
   "dependencies": {
     "@types/node": "^18.7.18",
