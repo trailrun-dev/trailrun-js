@@ -1,13 +1,16 @@
 import axios from "axios";
 import express from "express";
-import { trailrun } from "../../packages/node";
+import { initializeTrailrun } from "../../packages/node/dist/src";
 
 const logger = require("pino")();
 
 const app = express();
 const port = 8000;
 
-trailrun({ clientSecret: "dev-1234" });
+initializeTrailrun({
+  projectKey: "dev-1234",
+  deny: ["api.stripe.com/v1/charges"],
+});
 
 app.get("/", async (req, res) => {
   try {

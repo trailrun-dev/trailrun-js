@@ -4,7 +4,7 @@ import { trailrun } from "../../../packages/node/index";
 const delay = (ms: number | undefined) =>
   new Promise((res) => setTimeout(res, ms));
 
-trailrun({ clientSecret: "dev-1234" });
+trailrun({ projectKey: "dev-1234" });
 
 axios.get("https://zev.dev?testing=2", {
   headers: {
