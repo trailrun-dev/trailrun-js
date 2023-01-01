@@ -2,7 +2,6 @@ import https from "https";
 import { DateTime } from "luxon";
 import shimmer from "shimmer";
 import { LogPayload } from "./types";
-import { transformHeaders } from "./utils/headers";
 import { sendLogPayload } from "./utils/sendLogPayload";
 
 let clientSecret = "production";
@@ -18,7 +17,7 @@ shimmer.wrap(https, "request", function (original) {
       let callAt = DateTime.now();
       logPayload.request = {
         method,
-        headers: transformHeaders(headers),
+        headers,
         pathname,
         hostname,
         search,
@@ -39,7 +38,7 @@ shimmer.wrap(https, "request", function (original) {
                 const { statusCode, headers, message } = response;
                 logPayload.response = {
                   statusCode,
-                  headers: transformHeaders(headers),
+                  headers,
                   message,
                   body,
                 };

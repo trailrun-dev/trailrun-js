@@ -1,4 +1,4 @@
-import { LogPayload } from "../types";
+import { LogPayload, logSchema } from "../types";
 import { getApiBaseUrl } from "./apiBaseUrl";
 
 async function sendLogPayload(
@@ -8,10 +8,14 @@ async function sendLogPayload(
     clientSecret: string;
   }
 ) {
+  if (logSchema.safeParse(logPayload).success) {
+    return Promise.resolve();
+  }
+
   const postData = JSON.stringify(logPayload);
   const baseUrl = getApiBaseUrl(args.environment);
 
-  return await fetch(`${baseUrl}/ingest`, {
+  return fetch(`${baseUrl}/ingest`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

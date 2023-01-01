@@ -5,7 +5,7 @@ import { trailrun } from "../../packages/node";
 const logger = require("pino")();
 
 const app = express();
-const port = 8001;
+const port = 8000;
 
 trailrun({ clientSecret: "dev-1234" });
 
@@ -16,7 +16,6 @@ app.get("/", async (req, res) => {
   } catch {
     res.send("Failed Request");
   }
-  // console.log("Status Code", status);
 });
 
 app.listen(port, () => {

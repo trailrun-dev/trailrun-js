@@ -1,17 +1,25 @@
 import { number, object, string, z } from "zod";
 
-const headerSchema = object({
-  fieldName: string(),
-  fieldValue: string(),
-}).array();
+const headerSchema = z.record(string());
+const bodySchema = z.record(string());
 
 const logSchema = object({
   request: object({
-    method: string(),
+    method: z.enum([
+      "GET",
+      "HEAD",
+      "POST",
+      "PUT",
+      "PATCH",
+      "OPTIONS",
+      "DELETE",
+      "TRACE",
+    ]),
     headers: headerSchema,
     pathname: string(),
     hostname: string(),
     search: string().optional(),
+    body: bodySchema.optional(),
   }),
   response: object({
     statusCode: number(),
