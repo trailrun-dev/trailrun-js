@@ -2,9 +2,12 @@ import https from "https";
 import { DateTime } from "luxon";
 import shimmer from "shimmer";
 import { LogPayload } from "./types";
+import { shouldSkipLog } from "./utils/ignore";
 import { sendLogPayload } from "./utils/sendLogPayload";
 
-let clientSecret = "production";
+let projectKey: string | undefined;
+let environment = process.env.NODE_ENV || "production";
+let ignoredHostnames: string[] = [];
 
 shimmer.wrap(https, "request", function (original) {
   let logPayload = {} as LogPayload;
@@ -47,10 +50,12 @@ shimmer.wrap(https, "request", function (original) {
                 logPayload.latencyInMilliseconds =
                   DateTime.now().toMillis() - callAt.toMillis();
 
-                sendLogPayload(logPayload, {
-                  environment: "production",
-                  clientSecret: clientSecret,
-                });
+                if (shouldSkipLog(logPayload, ignoredHostnames)) {
+                  sendLogPayload(logPayload, {
+                    environment,
+                    projectKey,
+                  });
+                }
               });
             }
           }
@@ -64,8 +69,9 @@ shimmer.wrap(https, "request", function (original) {
   };
 });
 
-const initializeTrailrun = (args: { clientSecret: string }) => {
-  clientSecret = args.clientSecret;
+const initializeTrailrun = (args: { projectKey: string; deny?: string[] }) => {
+  projectKey = args.projectKey;
+  ignoredHostnames = args.deny || [];
   return true;
 };
 

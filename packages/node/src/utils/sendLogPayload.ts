@@ -5,10 +5,14 @@ async function sendLogPayload(
   logPayload: LogPayload,
   args: {
     environment: string;
-    clientSecret: string;
+    projectKey?: string;
   }
 ) {
   if (logSchema.safeParse(logPayload).success) {
+    return Promise.resolve();
+  }
+
+  if (!args.projectKey) {
     return Promise.resolve();
   }
 
@@ -20,7 +24,7 @@ async function sendLogPayload(
     headers: {
       "Content-Type": "application/json",
       "Content-Length": postData.length.toString(),
-      Authorization: `Bearer ${args.clientSecret}`,
+      Authorization: `Bearer ${args.projectKey}`,
     },
     body: postData,
   });
