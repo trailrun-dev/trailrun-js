@@ -8,10 +8,10 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
-    "dev": "turbo run dev"
+    "build": "pnpm dlx turbo run build",
+    "test": "pnpm dlx turbo run test",
+    "lint": "pnpm dlx turbo run lint",
+    "dev": "pnpm dlx turbo run dev"
   },
   "keywords": [],
   "author": "",

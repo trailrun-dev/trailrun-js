@@ -12,15 +12,15 @@ const logSchema = object({
     pathname: string(),
     hostname: string(),
     search: string().optional(),
-  }).optional(),
+  }),
   response: object({
     statusCode: number(),
     headers: headerSchema,
     message: string(),
     body: string().optional(),
-  }).optional(),
+  }),
   callAt: string(),
-  latency: number(),
+  latencyInMilliseconds: number(),
 });
 
 type LogPayload = z.infer<typeof logSchema>;

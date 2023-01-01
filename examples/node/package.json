@@ -1,5 +1,6 @@
 {
   "name": "testing",
+  "private": true,
   "version": "1.0.0",
   "main": "index",
   "license": "MIT",
@@ -9,6 +10,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.14",
+    "@types/node": "^18.11.18",
     "nodemon": "^2.0.20",
     "pino": "^8.6.0",
     "ts-node": "^10.9.1",

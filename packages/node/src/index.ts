@@ -1,20 +1,22 @@
 import https from "https";
 import { DateTime } from "luxon";
 import shimmer from "shimmer";
-import TrailrunClient from "./client";
 import { LogPayload } from "./types";
 import { transformHeaders } from "./utils/headers";
+import { sendLogPayload } from "./utils/sendLogPayload";
 
-var trailrunClient: TrailrunClient;
+let clientSecret = "production";
+
 shimmer.wrap(https, "request", function (original) {
+  let logPayload = {} as LogPayload;
+
   return function (this: any) {
     var req = original.apply(this, arguments as any);
     try {
-      const { method, headers, hostname, pathname, search, protocol } =
-        arguments[0];
+      const { method, headers, hostname, pathname, search } = arguments[0];
 
       let callAt = DateTime.now();
-      trailrunClient.logPayload.request = {
+      logPayload.request = {
         method,
         headers: transformHeaders(headers),
         pathname,
@@ -35,18 +37,21 @@ shimmer.wrap(https, "request", function (original) {
 
               response.on("end", () => {
                 const { statusCode, headers, message } = response;
-                trailrunClient.logPayload.response = {
+                logPayload.response = {
                   statusCode,
                   headers: transformHeaders(headers),
                   message,
                   body,
                 };
 
-                trailrunClient.logPayload.callAt = callAt.toISO();
-                trailrunClient.logPayload.latency =
+                logPayload.callAt = callAt.toISO();
+                logPayload.latencyInMilliseconds =
                   DateTime.now().toMillis() - callAt.toMillis();
 
-                trailrunClient.send();
+                sendLogPayload(logPayload, {
+                  environment: "production",
+                  clientSecret: clientSecret,
+                });
               });
             }
           }
@@ -60,8 +65,9 @@ shimmer.wrap(https, "request", function (original) {
   };
 });
 
-const initializeTrailrunClient = (args: { clientSecret: string }) => {
-  trailrunClient = new TrailrunClient(args.clientSecret);
+const initializeTrailrun = (args: { clientSecret: string }) => {
+  clientSecret = args.clientSecret;
+  return true;
 };
 
-export { LogPayload, initializeTrailrunClient };
+export { LogPayload, initializeTrailrun };

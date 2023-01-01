@@ -1,12 +1,11 @@
 import axios from "axios";
 import express from "express";
+import { trailrun } from "../../packages/node";
 
-// @ts-ignore
-import trailrun from "../index";
 const logger = require("pino")();
 
 const app = express();
-const port = 8000;
+const port = 8001;
 
 trailrun({ clientSecret: "dev-1234" });
 
