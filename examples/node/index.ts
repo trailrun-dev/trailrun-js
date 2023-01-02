@@ -8,13 +8,13 @@ const app = express();
 const port = 8000;
 
 initializeTrailrun({
-  projectKey: "dev-1234",
-  deny: ["api.stripe.com/v1/charges"],
+  projectKey: "tr_1234",
+  debug: true,
 });
 
 app.get("/", async (req, res) => {
   try {
-    const { status } = await axios.get("https://api.stripe.com/v1/charges");
+    const { status } = await axios.get("https://api.github.com");
     res.send("Successful Request");
   } catch {
     res.send("Failed Request");

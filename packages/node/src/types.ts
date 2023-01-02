@@ -29,6 +29,7 @@ const logSchema = object({
   }),
   callAt: string(),
   latencyInMilliseconds: number(),
+  environment: string(),
 });
 
 type LogPayload = z.infer<typeof logSchema>;

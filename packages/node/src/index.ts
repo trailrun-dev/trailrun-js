@@ -6,8 +6,9 @@ import { shouldSkipLog } from "./utils/ignore";
 import { sendLogPayload } from "./utils/sendLogPayload";
 
 let projectKey: string | undefined;
-let environment = process.env.NODE_ENV || "production";
+let environment = process.env.NODE_ENV || "development";
 let ignoredHostnames: string[] = [];
+let debug = false;
 
 shimmer.wrap(https, "request", function (original) {
   let logPayload = {} as LogPayload;
@@ -49,12 +50,24 @@ shimmer.wrap(https, "request", function (original) {
                 logPayload.callAt = callAt.toISO();
                 logPayload.latencyInMilliseconds =
                   DateTime.now().toMillis() - callAt.toMillis();
+                logPayload.environment = environment;
 
-                if (shouldSkipLog(logPayload, ignoredHostnames)) {
+                if (!shouldSkipLog(logPayload, ignoredHostnames)) {
                   sendLogPayload(logPayload, {
                     environment,
                     projectKey,
-                  });
+                    debug,
+                  })
+                    .then((r) => {
+                      if (debug) {
+                        console.log(r);
+                      }
+                    })
+                    .catch((e) => {
+                      if (debug) {
+                        console.log(e);
+                      }
+                    });
                 }
               });
             }
@@ -69,10 +82,15 @@ shimmer.wrap(https, "request", function (original) {
   };
 });
 
-const initializeTrailrun = (args: { projectKey: string; deny?: string[] }) => {
+const initializeTrailrun = (args: {
+  projectKey: string;
+  ignore?: string[];
+  debug?: boolean;
+  inDevelopment?: boolean;
+}): void => {
   projectKey = args.projectKey;
-  ignoredHostnames = args.deny || [];
-  return true;
+  ignoredHostnames = args.ignore || [];
+  debug = args.debug || false;
 };
 
 export { LogPayload, initializeTrailrun };

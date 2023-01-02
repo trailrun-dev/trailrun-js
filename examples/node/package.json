@@ -5,7 +5,7 @@
   "main": "index",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon index.ts",
+    "dev": "set NODE_ENV=development && nodemon index.ts",
     "script:axios": "ts-node ./bin/axios"
   },
   "devDependencies": {
