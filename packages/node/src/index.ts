@@ -1,14 +1,10 @@
 import https from "https";
 import { DateTime } from "luxon";
 import shimmer from "shimmer";
+import { Logger } from "./logger";
 import { LogPayload } from "./types";
-import { shouldSkipLog } from "./utils/ignore";
-import { sendLogPayload } from "./utils/sendLogPayload";
 
-let projectKey: string | undefined;
-let environment = process.env.NODE_ENV || "development";
-let ignoredHostnames: string[] = [];
-let debug = false;
+var logger: Logger;
 
 shimmer.wrap(https, "request", function (original) {
   let logPayload = {} as LogPayload;
@@ -50,21 +46,18 @@ shimmer.wrap(https, "request", function (original) {
                 logPayload.callAt = callAt.toISO();
                 logPayload.latencyInMilliseconds =
                   DateTime.now().toMillis() - callAt.toMillis();
-                logPayload.environment = environment;
+                logPayload.environment = this.environment;
 
-                if (!shouldSkipLog(logPayload, ignoredHostnames)) {
-                  sendLogPayload(logPayload, {
-                    environment,
-                    projectKey,
-                    debug,
-                  })
+                if (logger.shouldSkipLog(logPayload)) {
+                  logger
+                    .sendLogPayload(logPayload)
                     .then((r) => {
-                      if (debug) {
+                      if (logger.debug) {
                         console.log(r);
                       }
                     })
                     .catch((e) => {
-                      if (debug) {
+                      if (logger.debug) {
                         console.log(e);
                       }
                     });
@@ -86,11 +79,12 @@ const initializeTrailrun = (args: {
   projectKey: string;
   ignore?: string[];
   debug?: boolean;
-  inDevelopment?: boolean;
 }): void => {
-  projectKey = args.projectKey;
-  ignoredHostnames = args.ignore || [];
-  debug = args.debug || false;
+  logger = new Logger({
+    projectKey: args.projectKey,
+    ignoredHostnames: args.ignore,
+    debug: args.debug,
+  });
 };
 
 export { LogPayload, initializeTrailrun };
