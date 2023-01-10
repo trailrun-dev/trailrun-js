@@ -9,10 +9,12 @@
     "packagepublish": "pnpm build && npm publish --access public"
   },
   "dependencies": {
+    "@mswjs/interceptors": "^0.19.2",
     "@types/node": "^18.7.18",
-    "cross-fetch": "^3.1.5",
+    "axios": "^0.27.2",
     "https": "^1.0.0",
     "luxon": "^3.0.3",
+    "node-fetch": "^3.3.0",
     "shimmer": "^1.2.1",
     "zod": "^3.20.2"
   },

@@ -1,8 +1,9 @@
 import axios from "axios";
 import { trailrun } from "../../../packages/node";
 
+//trailrunApiBaseUrl: "http://localhost:4000"
 trailrun({
-  projectKey: "",
+  projectKey: "tr_dSy2zLMV",
   debug: true,
   trailrunApiBaseUrl: "http://localhost:8080",
 });

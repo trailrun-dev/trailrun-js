@@ -71,7 +71,6 @@ class Logger {
         "Content-Length": postData.length.toString(),
         Authorization: `Bearer ${this.projectKey}`,
       },
-      body: postData,
     });
   }
 }

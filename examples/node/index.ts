@@ -1,13 +1,13 @@
 import axios from "axios";
 import express from "express";
-import { initializeTrailrun } from "../../packages/node/dist/src";
+import { trailrun } from "../../packages/node/dist/src";
 
 const logger = require("pino")();
 
 const app = express();
 const port = 8000;
 
-initializeTrailrun({
+trailrun({
   projectKey: "tr_1234",
   debug: true,
 });

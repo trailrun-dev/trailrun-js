@@ -1,7 +1,7 @@
-import { number, object, string, z } from "zod";
+import { any, number, object, string, z } from "zod";
 
-const headerSchema = z.record(string());
-const bodySchema = z.record(string());
+const headerSchema = z.record(any());
+const bodySchema = z.record(any());
 
 const logSchema = object({
   request: object({
@@ -16,10 +16,11 @@ const logSchema = object({
       "TRACE",
     ]),
     headers: headerSchema,
-    pathname: string().optional(),
-    hostname: string().optional(),
-    search: string().nullable().optional(),
-    body: bodySchema.optional(),
+    pathname: string(),
+    hostname: string(),
+    search: string().optional(),
+    body: any().optional(),
+    callAt: string(),
   }),
   response: object({
     statusCode: number(),

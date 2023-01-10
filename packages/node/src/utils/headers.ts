@@ -1,3 +1,5 @@
+import { Headers } from "node-fetch";
+
 const normalizeOutgoingHeaders = (
   headers: Record<string, string | number | (string | number)[] | undefined>
 ) => {
@@ -12,5 +14,24 @@ const normalizeOutgoingHeaders = (
 
   return normalizedHeaders;
 };
+
+function normalizeOutgoingHeaders1(
+  outgoingHeaders: Headers | undefined
+): Headers {
+  if (!outgoingHeaders) {
+    return new Headers();
+  }
+
+  const headers = new Headers();
+  for (const [headerName, headerValue] of Object.entries(outgoingHeaders)) {
+    if (!headerValue) {
+      continue;
+    }
+
+    headers.set(headerName.toLowerCase(), headerValue.toString());
+  }
+
+  return headers;
+}
 
 export { normalizeOutgoingHeaders };
