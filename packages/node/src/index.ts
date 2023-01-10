@@ -17,7 +17,7 @@ shimmer.wrap(https, "request", function (original) {
       let callAt = DateTime.now();
       logPayload.request = {
         method,
-        headers,
+        headers: normalizeOutgoingHeaders(headers),
         pathname,
         hostname,
         search,
@@ -38,7 +38,7 @@ shimmer.wrap(https, "request", function (original) {
                 const { statusCode, headers, message } = response;
                 logPayload.response = {
                   statusCode,
-                  headers,
+                  headers: headers,
                   message,
                   body,
                 };
@@ -48,7 +48,7 @@ shimmer.wrap(https, "request", function (original) {
                   DateTime.now().toMillis() - callAt.toMillis();
                 logPayload.environment = this.environment ?? "development";
 
-                if (logger.shouldSkipLog(logPayload)) {
+                if (!logger.shouldSkipLog(logPayload)) {
                   logger
                     .sendLogPayload(logPayload)
                     .then((r) => {

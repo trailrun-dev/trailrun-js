@@ -18,7 +18,7 @@ const logSchema = object({
     headers: headerSchema,
     pathname: string(),
     hostname: string(),
-    search: string().optional(),
+    search: string().nullable().optional(),
     body: bodySchema.optional(),
   }),
   response: object({

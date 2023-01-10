@@ -33,7 +33,7 @@ class Logger {
     }
 
     // Skip logging if the project key is undefined
-    if (!this.projectKey) {
+    if (!this.projectKey || this.projectKey === "") {
       if (this.debug) {
         console.log("Project key is undefined");
       }

@@ -1,6 +1,6 @@
 {
   "name": "@trailrun/node",
-  "version": "0.0.4-beta.2",
+  "version": "0.0.8",
   "license": "MIT",
   "author": "Zev Stravitz",
   "scripts": {
