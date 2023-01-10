@@ -1,3 +1,4 @@
+import { fetch } from "cross-fetch";
 import { API_BASE_URL } from "./constants";
 import { LogPayload, logSchema } from "./types";
 
@@ -6,25 +7,36 @@ class Logger {
   public environment = process.env.NODE_ENV || "development";
   public ignoredHostnames: string[] = [];
   public debug = false;
+  public trailrunApiBaseUrl = API_BASE_URL;
 
   constructor(args: {
     projectKey?: string;
     ignoredHostnames?: string[];
     debug?: boolean;
+    trailrunApiBaseUrl?: string;
   }) {
     this.projectKey = args.projectKey;
     this.ignoredHostnames = args.ignoredHostnames || [];
     this.debug = args.debug || false;
+    this.trailrunApiBaseUrl = args.trailrunApiBaseUrl || API_BASE_URL;
   }
 
   public shouldSkipLog(logPayload: LogPayload) {
     // Skip logging if the schema validation fails
-    if (logSchema.safeParse(logPayload).success) {
+    const schemaParseResult = logSchema.safeParse(logPayload);
+    if (schemaParseResult.success) {
       return true;
+    } else {
+      if (this.debug) {
+        console.log("Payload schema is invalid", schemaParseResult.error);
+      }
     }
 
     // Skip logging if the project key is undefined
     if (!this.projectKey) {
+      if (this.debug) {
+        console.log("Project key is undefined");
+      }
       return true;
     }
 
@@ -33,19 +45,15 @@ class Logger {
       logPayload.request.hostname &&
       this.ignoredHostnames.includes(logPayload.request.hostname)
     ) {
+      if (this.debug) {
+        console.log(
+          `Hostname ${logPayload.request.hostname} is in the ignored list`
+        );
+      }
       return true;
     }
 
     return false;
-  }
-
-  private getApiBaseUrl() {
-    const DEV_API_BASEURL = "http://localhost:4000";
-    if (this.debug) {
-      return DEV_API_BASEURL;
-    }
-
-    return this.environment === "production" ? API_BASE_URL : DEV_API_BASEURL;
   }
 
   /*
@@ -64,9 +72,8 @@ class Logger {
   */
   public async sendLogPayload(logPayload: LogPayload) {
     const postData = JSON.stringify(logPayload);
-    const baseUrl = this.getApiBaseUrl();
 
-    return fetch(`${baseUrl}/v1/ingest`, {
+    return fetch(`${this.trailrunApiBaseUrl}/v1/ingest`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

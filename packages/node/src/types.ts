@@ -24,7 +24,7 @@ const logSchema = object({
   response: object({
     statusCode: number(),
     headers: headerSchema,
-    message: string(),
+    message: string().optional(),
     body: string().optional(),
   }),
   callAt: string(),

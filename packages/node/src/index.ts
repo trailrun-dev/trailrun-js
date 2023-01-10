@@ -46,7 +46,7 @@ shimmer.wrap(https, "request", function (original) {
                 logPayload.callAt = callAt.toISO();
                 logPayload.latencyInMilliseconds =
                   DateTime.now().toMillis() - callAt.toMillis();
-                logPayload.environment = this.environment;
+                logPayload.environment = this.environment ?? "development";
 
                 if (logger.shouldSkipLog(logPayload)) {
                   logger
@@ -75,16 +75,18 @@ shimmer.wrap(https, "request", function (original) {
   };
 });
 
-const initializeTrailrun = (args: {
+const trailrun = (args: {
   projectKey: string;
   ignore?: string[];
   debug?: boolean;
+  trailrunApiBaseUrl?: string;
 }): void => {
   logger = new Logger({
     projectKey: args.projectKey,
     ignoredHostnames: args.ignore,
     debug: args.debug,
+    trailrunApiBaseUrl: args.trailrunApiBaseUrl,
   });
 };
 
-export { LogPayload, initializeTrailrun };
+export { LogPayload, trailrun };
