@@ -1,12 +1,15 @@
 import axios from "axios";
+import * as dotenv from "dotenv";
 import { trailrun } from "../../../packages/node";
+
+dotenv.config();
 
 const delay = (ms: number | undefined) =>
   new Promise((res) => setTimeout(res, ms));
 
 //trailrunApiBaseUrl: "http://localhost:4000"
 trailrun({
-  projectKey: "tr_dSy2zLMV",
+  projectKey: process.env.TRAILRUN_PROJECT_KEY as string,
   debug: true,
   trailrunApiBaseUrl: "http://localhost:8080",
 });
