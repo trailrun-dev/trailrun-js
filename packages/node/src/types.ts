@@ -20,7 +20,6 @@ const logSchema = object({
     hostname: string(),
     search: string().optional(),
     body: any().optional(),
-    callAt: string(),
   }),
   response: object({
     statusCode: number(),
