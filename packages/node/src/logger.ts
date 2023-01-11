@@ -24,20 +24,13 @@ class Logger {
   public shouldSkipLog(logPayload: LogPayload) {
     // Skip logging if the schema validation fails
     const schemaParseResult = logSchema.safeParse(logPayload);
-    if (schemaParseResult.success) {
-      return true;
-    } else {
-      if (this.debug) {
-        console.log("Payload schema is invalid", schemaParseResult.error);
-      }
+    if (!schemaParseResult.success && schemaParseResult.error) {
+      return { shouldSkipLog: true, reason: schemaParseResult.error };
     }
 
     // Skip logging if the project key is undefined
     if (!this.projectKey || this.projectKey === "") {
-      if (this.debug) {
-        console.log("Project key is undefined");
-      }
-      return true;
+      return { shouldSkipLog: true, reason: "Project key is undefined" };
     }
 
     // Skip logging if the hostname is in the ignored list
@@ -45,15 +38,13 @@ class Logger {
       logPayload.request.hostname &&
       this.ignoredHostnames.includes(logPayload.request.hostname)
     ) {
-      if (this.debug) {
-        console.log(
-          `Hostname ${logPayload.request.hostname} is in the ignored list`
-        );
-      }
-      return true;
+      return {
+        shouldSkipLog: true,
+        reason: `Hostname ${logPayload.request.hostname} is in the ignored list`,
+      };
     }
 
-    return false;
+    return { shouldSkipLog: false, reason: undefined };
   }
 
   /*

@@ -3,13 +3,14 @@ import { DateTime } from "luxon";
 import shimmer from "shimmer";
 import { Logger } from "./logger";
 import { LogPayload } from "./types";
+import { normalizeOutgoingHeaders } from "./utils/headers";
 
 var logger: Logger;
 
 shimmer.wrap(https, "request", function (original) {
   let logPayload = {} as LogPayload;
 
-  return function (this: any) {
+  return function (this: typeof original) {
     var req = original.apply(this, arguments as any);
     try {
       const { method, headers, hostname, pathname, search } = arguments[0];
@@ -48,7 +49,13 @@ shimmer.wrap(https, "request", function (original) {
                   DateTime.now().toMillis() - callAt.toMillis();
                 logPayload.environment = this.environment ?? "development";
 
-                if (!logger.shouldSkipLog(logPayload)) {
+                const { shouldSkipLog, reason } =
+                  logger.shouldSkipLog(logPayload);
+                if (shouldSkipLog) {
+                  if (logger.debug) {
+                    console.log("‼️ Skipping log: ", reason);
+                  }
+                } else {
                   logger
                     .sendLogPayload(logPayload)
                     .then((r) => {
@@ -81,12 +88,9 @@ const trailrun = (args: {
   debug?: boolean;
   trailrunApiBaseUrl?: string;
 }): void => {
-  logger = new Logger({
-    projectKey: args.projectKey,
-    ignoredHostnames: args.ignore,
-    debug: args.debug,
-    trailrunApiBaseUrl: args.trailrunApiBaseUrl,
-  });
+  console.log("⛰️ Initializing trailrun");
+  logger = new Logger({ ...args });
+  console.log("✅ Initialized trailrun");
 };
 
 export { LogPayload, trailrun };
