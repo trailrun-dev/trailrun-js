@@ -67,6 +67,7 @@ class Logger {
     return fetch(`${this.trailrunApiBaseUrl}/v1/ingest`, {
       method: "POST",
       headers: {
+        "X-Trailrun-Client": "trailrun-node",
         "Content-Type": "application/json",
         "Content-Length": postData.length.toString(),
         Authorization: `Bearer ${this.projectKey}`,

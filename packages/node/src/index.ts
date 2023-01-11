@@ -4,7 +4,7 @@ import { InteractiveRequest } from "@mswjs/interceptors/lib/utils/toInteractiveR
 import { DateTime } from "luxon";
 import { Logger } from "./logger";
 import { LogPayload } from "./types";
-import { normalizeOutgoingHeaders } from "./utils/headers";
+import { isTrailrunRequest, normalizeOutgoingHeaders } from "./utils/headers";
 
 var logger: Logger;
 
@@ -33,8 +33,7 @@ async function _handleHttpRequest(
   request: InteractiveRequest,
   requestId: string
 ): Promise<void> {
-  const urlInterface = new URL(request.url);
-  if (urlInterface.hostname === "localhost") {
+  if (isTrailrunRequest(request)) {
     return;
   }
 
@@ -49,8 +48,7 @@ async function _handleHttpResponse(
   request: Request,
   requestId: string
 ): Promise<void> {
-  const urlInterface = new URL(request.url);
-  if (urlInterface.hostname === "localhost") {
+  if (isTrailrunRequest(request)) {
     return;
   }
 
@@ -70,6 +68,8 @@ async function _handleHttpResponse(
   if (request.body && request.bodyUsed) {
     requestBody = await streamToString(request.body.getReader());
   }
+
+  const urlInterface = new URL(request.url);
 
   const payloadRequest: LogPayload["request"] = {
     method: request.method.toString() as LogPayload["request"]["method"],
@@ -97,7 +97,9 @@ async function _handleHttpResponse(
     environment: logger.environment ?? "development",
   };
 
-  console.log("📦 Sending log payload: ", logPayload);
+  if (logger.debug) {
+    console.log("📦 Sending log payload");
+  }
 
   const { shouldSkipLog, reason } = logger.shouldSkipLog(logPayload);
   if (shouldSkipLog) {

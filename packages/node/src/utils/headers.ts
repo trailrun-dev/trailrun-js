@@ -11,4 +11,8 @@ const normalizeOutgoingHeaders = (headers: globalThis.Headers) => {
   return normalizedHeaders;
 };
 
-export { normalizeOutgoingHeaders };
+function isTrailrunRequest(request: Request) {
+  return request.headers.get("X-Trailrun-Client") != null;
+}
+
+export { normalizeOutgoingHeaders, isTrailrunRequest };
