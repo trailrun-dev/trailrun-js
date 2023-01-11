@@ -1,86 +1,122 @@
-import https from "https";
+import { BatchInterceptor } from "@mswjs/interceptors";
+import nodeInterceptors from "@mswjs/interceptors/lib/presets/node";
+import { InteractiveRequest } from "@mswjs/interceptors/lib/utils/toInteractiveRequest";
 import { DateTime } from "luxon";
-import shimmer from "shimmer";
 import { Logger } from "./logger";
 import { LogPayload } from "./types";
 import { normalizeOutgoingHeaders } from "./utils/headers";
 
 var logger: Logger;
 
-shimmer.wrap(https, "request", function (original) {
-  let logPayload = {} as LogPayload;
+// RequestID -> callAt timestamp
+const requestResponseMap = new Map<
+  string,
+  {
+    callAt: string;
+  }
+>();
 
-  return function (this: typeof original) {
-    var req = original.apply(this, arguments as any);
-    try {
-      const { method, headers, hostname, pathname, search } = arguments[0];
+function instrumentHTTPTraffic() {
+  const interceptor = new BatchInterceptor({
+    name: "trailrun-interceptor",
+    interceptors: nodeInterceptors,
+  });
 
-      let callAt = DateTime.now();
-      logPayload.request = {
-        method,
-        headers: normalizeOutgoingHeaders(headers),
-        pathname,
-        hostname,
-        search,
-      };
+  interceptor.on("request", _handleHttpRequest);
 
-      let body = "";
+  interceptor.on("response", _handleHttpResponse);
 
-      const emit = req.emit;
-      req.emit = function (this: any, eventName: any, response: any) {
-        try {
-          switch (eventName) {
-            case "response": {
-              response.on("data", (d: any) => {
-                body += d;
-              });
+  interceptor.apply();
+}
 
-              response.on("end", () => {
-                const { statusCode, headers, message } = response;
-                logPayload.response = {
-                  statusCode,
-                  headers: headers,
-                  message,
-                  body,
-                };
+async function _handleHttpRequest(
+  request: InteractiveRequest,
+  requestId: string
+): Promise<void> {
+  const urlInterface = new URL(request.url);
+  if (urlInterface.hostname === "localhost") {
+    return;
+  }
 
-                logPayload.callAt = callAt.toISO();
-                logPayload.latencyInMilliseconds =
-                  DateTime.now().toMillis() - callAt.toMillis();
-                logPayload.environment = this.environment ?? "development";
+  requestResponseMap.set(requestId, {
+    callAt: DateTime.now().toISO(),
+  });
+  return;
+}
 
-                const { shouldSkipLog, reason } =
-                  logger.shouldSkipLog(logPayload);
-                if (shouldSkipLog) {
-                  if (logger.debug) {
-                    console.log("‼️ Skipping log: ", reason);
-                  }
-                } else {
-                  logger
-                    .sendLogPayload(logPayload)
-                    .then(() => {
-                      console.log(
-                        `✅ [${callAt}] Sent log payload for req to hostname ${hostname}}`
-                      );
-                    })
-                    .catch(() => {
-                      console.log(
-                        `✅ [${callAt}] Failed to send log payload for req to hostname ${hostname}}`
-                      );
-                    });
-                }
-              });
-            }
-          }
-        } catch {} // silently fail
-        return emit.apply(this, arguments as any);
-      } as any;
-      return req;
-    } catch {
-      return req;
-    }
+async function _handleHttpResponse(
+  response: Response,
+  request: Request,
+  requestId: string
+): Promise<void> {
+  const urlInterface = new URL(request.url);
+  if (urlInterface.hostname === "localhost") {
+    return;
+  }
+
+  let responseBody = "";
+  if (response.body && response.bodyUsed) {
+    responseBody = await streamToString(response.body.getReader());
+  }
+
+  const payloadResponse: LogPayload["response"] = {
+    message: response.statusText,
+    body: responseBody,
+    headers: response.headers,
+    statusCode: response.status,
   };
-});
+
+  let requestBody = "";
+  if (request.body && request.bodyUsed) {
+    requestBody = await streamToString(request.body.getReader());
+  }
+
+  const payloadRequest: LogPayload["request"] = {
+    method: request.method.toString() as LogPayload["request"]["method"],
+    hostname: urlInterface.hostname,
+    headers: normalizeOutgoingHeaders(request.headers as globalThis.Headers),
+    body: requestBody,
+    search: urlInterface.search,
+    pathname: urlInterface.pathname,
+  };
+
+  const requestObject = requestResponseMap.get(requestId);
+
+  if (!requestObject) {
+    return;
+  }
+
+  const { callAt } = requestObject;
+
+  const logPayload: LogPayload = {
+    request: payloadRequest,
+    response: payloadResponse,
+    callAt,
+    latencyInMilliseconds:
+      DateTime.now().toMillis() - DateTime.fromISO(callAt).toMillis(),
+    environment: logger.environment ?? "development",
+  };
+
+  console.log("📦 Sending log payload: ", logPayload);
+
+  const { shouldSkipLog, reason } = logger.shouldSkipLog(logPayload);
+  if (shouldSkipLog) {
+    if (logger.debug) {
+      console.log("!! Skipping log: ", reason);
+    }
+  } else {
+    try {
+      await logger.sendLogPayload(logPayload);
+      console.log(
+        `✅ [${callAt}] - Successfully sent log payload for req to hostname ${payloadRequest.hostname}`
+      );
+    } catch {
+      console.log(
+        `✅ [${callAt}] - Failed to send log payload for req to hostname ${payloadRequest.hostname}`
+      );
+    }
+  }
+}
 
 const trailrun = (args: {
   projectKey: string;
@@ -90,6 +126,7 @@ const trailrun = (args: {
 }): void => {
   console.log("⛰️ Initializing trailrun");
   logger = new Logger({ ...args });
+  instrumentHTTPTraffic();
   console.log("✅ Initialized trailrun");
 };
 
