@@ -59,14 +59,16 @@ shimmer.wrap(https, "request", function (original) {
                   logger
                     .sendLogPayload(logPayload)
                     .then((r) => {
-                      if (logger.debug) {
-                        console.log(r);
-                      }
+                      console.log(
+                        "Send log payload for req to hostname ",
+                        hostname
+                      );
                     })
                     .catch((e) => {
-                      if (logger.debug) {
-                        console.log(e);
-                      }
+                      console.log(
+                        "Failed to send log payload for req to hostname ",
+                        hostname
+                      );
                     });
                 }
               });
