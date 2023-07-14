@@ -3,18 +3,25 @@ import { ClientRequestInterceptor } from '@mswjs/interceptors/ClientRequest';
 import { XMLHttpRequestInterceptor } from '@mswjs/interceptors/XMLHttpRequest';
 import { InteractiveRequest } from '@mswjs/interceptors/src/utils/toInteractiveRequest';
 import { DateTime } from 'luxon';
-import { Logger } from '../logger';
 import { LogPayload } from '../types';
 import { isTrailrunRequest, normalizeOutgoingHeaders } from '../utils/headers';
-import { AgentState } from './AgentState';
-
+import { BatchManager } from './BatchManager';
+import { LatencyMap } from './LatencyMap';
 export class RequestMonitor {
-	agentState: AgentState;
-	logger: Logger;
+	latencyMap: LatencyMap;
+	batchManager: BatchManager;
+	environment: string;
 
-	constructor(agentState: AgentState, logger: Logger) {
-		this.agentState = agentState;
-		this.logger = logger;
+	constructor(
+		latencyMap: LatencyMap,
+		batchManager: BatchManager,
+		runtime: {
+			environment?: string;
+		},
+	) {
+		this.latencyMap = latencyMap;
+		this.batchManager = batchManager;
+		this.environment = runtime.environment ?? 'development';
 	}
 
 	async handleHttpRequest(args: {
@@ -25,7 +32,7 @@ export class RequestMonitor {
 			return;
 		}
 
-		this.agentState.setRequestResponse(args.requestId, DateTime.now().toISO());
+		this.latencyMap.setRequestResponse(args.requestId, DateTime.now().toISO());
 	}
 
 	async handleHttpResponse(args: {
@@ -67,7 +74,7 @@ export class RequestMonitor {
 			pathname: urlInterface.pathname,
 		};
 
-		const requestObject = this.agentState.getRequestResponse(requestId);
+		const requestObject = this.latencyMap.getRequestResponse(requestId);
 
 		if (!requestObject) {
 			return;
@@ -80,14 +87,14 @@ export class RequestMonitor {
 			response: payloadResponse,
 			callAt,
 			latencyInMilliseconds: DateTime.now().toMillis() - DateTime.fromISO(callAt).toMillis(),
-			environment: this.logger.environment ?? 'development',
+			environment: this.environment,
 		};
 
-		if (this.logger.debug) {
-			console.log('📦 Sending log payload');
-		}
+		this.latencyMap.clearRequestResponse(requestId);
 
-		await this.logger.sendLogPayload(logPayload);
+		if (this.batchManager.shouldAddToBatch(logPayload)) {
+			this.batchManager.addToBatch(logPayload);
+		}
 	}
 
 	instrumentHTTPTraffic() {

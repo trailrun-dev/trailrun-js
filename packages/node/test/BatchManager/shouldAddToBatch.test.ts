@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { Logger } from '../src/logger';
+import { BatchManager } from '../../src/agent/BatchManager';
+import { Logger } from '../../src/agent/Logger';
 
 describe('shouldSkipLog', () => {
 	it('should ignore a hostname if specified', () => {
@@ -14,7 +15,9 @@ describe('shouldSkipLog', () => {
 			},
 		} as any;
 
-		expect(logger.shouldSkipLog(logPayload)).toBe(true);
+		const batchManager = new BatchManager(logger);
+
+		expect(batchManager.shouldAddToBatch(logPayload)).toBe(false);
 	});
 
 	it('should not ignore a hostname unless specified', () => {
@@ -48,6 +51,8 @@ describe('shouldSkipLog', () => {
 			environment: 'development',
 		} as any;
 
-		expect(logger.shouldSkipLog(logPayload)).toBe(false);
+		const batchManager = new BatchManager(logger);
+
+		expect(batchManager.shouldAddToBatch(logPayload)).toBe(true);
 	});
 });
