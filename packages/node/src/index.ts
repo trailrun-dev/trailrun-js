@@ -1,135 +1,20 @@
-import { BatchInterceptor } from "@mswjs/interceptors";
-import nodeInterceptors from "@mswjs/interceptors/lib/presets/node";
-import { InteractiveRequest } from "@mswjs/interceptors/lib/utils/toInteractiveRequest";
-import { DateTime } from "luxon";
-import { Logger } from "./logger";
-import { LogPayload } from "./types";
-import { isTrailrunRequest, normalizeOutgoingHeaders } from "./utils/headers";
-
-var logger: Logger;
-
-// RequestID -> callAt timestamp
-const requestResponseMap = new Map<
-  string,
-  {
-    callAt: string;
-  }
->();
-
-function instrumentHTTPTraffic() {
-  const interceptor = new BatchInterceptor({
-    name: "trailrun-interceptor",
-    interceptors: nodeInterceptors,
-  });
-
-  interceptor.on("request", _handleHttpRequest);
-
-  interceptor.on("response", _handleHttpResponse);
-
-  interceptor.apply();
-}
-
-async function _handleHttpRequest(
-  request: InteractiveRequest,
-  requestId: string
-): Promise<void> {
-  if (isTrailrunRequest(request)) {
-    return;
-  }
-
-  requestResponseMap.set(requestId, {
-    callAt: DateTime.now().toISO(),
-  });
-  return;
-}
-
-async function _handleHttpResponse(
-  response: Response,
-  request: Request,
-  requestId: string
-): Promise<void> {
-  if (isTrailrunRequest(request)) {
-    return;
-  }
-
-  let responseBody = "";
-  if (response.body && response.bodyUsed) {
-    responseBody = await streamToString(response.body.getReader());
-  }
-
-  const payloadResponse: LogPayload["response"] = {
-    message: response.statusText,
-    body: responseBody,
-    headers: response.headers,
-    statusCode: response.status,
-  };
-
-  let requestBody = "";
-  if (request.body && request.bodyUsed) {
-    requestBody = await streamToString(request.body.getReader());
-  }
-
-  const urlInterface = new URL(request.url);
-
-  const payloadRequest: LogPayload["request"] = {
-    method: request.method.toString() as LogPayload["request"]["method"],
-    hostname: urlInterface.hostname,
-    headers: normalizeOutgoingHeaders(request.headers as globalThis.Headers),
-    body: requestBody,
-    search: urlInterface.search,
-    pathname: urlInterface.pathname,
-  };
-
-  const requestObject = requestResponseMap.get(requestId);
-
-  if (!requestObject) {
-    return;
-  }
-
-  const { callAt } = requestObject;
-
-  const logPayload: LogPayload = {
-    request: payloadRequest,
-    response: payloadResponse,
-    callAt,
-    latencyInMilliseconds:
-      DateTime.now().toMillis() - DateTime.fromISO(callAt).toMillis(),
-    environment: logger.environment ?? "development",
-  };
-
-  if (logger.debug) {
-    console.log("📦 Sending log payload");
-  }
-
-  const { shouldSkipLog, reason } = logger.shouldSkipLog(logPayload);
-  if (shouldSkipLog) {
-    if (logger.debug) {
-      console.log("!! Skipping log: ", reason);
-    }
-  } else {
-    try {
-      await logger.sendLogPayload(logPayload);
-      console.log(
-        `✅ [${callAt}] - Successfully sent log payload for req to hostname ${payloadRequest.hostname}`
-      );
-    } catch {
-      console.log(
-        `✅ [${callAt}] - Failed to send log payload for req to hostname ${payloadRequest.hostname}`
-      );
-    }
-  }
-}
+import { AgentState } from './agent/AgentState';
+import { RequestMonitor } from './agent/RequestMonitor';
+import { Logger } from './logger';
 
 const trailrun = (args: {
-  projectKey: string;
-  ignore?: string[];
-  debug?: boolean;
-  trailrunApiBaseUrl?: string;
+	projectKey: string;
+	ignore?: string[];
+	debug?: boolean;
+	trailrunApiBaseUrl?: string;
 }): void => {
-  console.log("⛰️ Initializing trailrun");
-  logger = new Logger({ ...args });
-  instrumentHTTPTraffic();
-  console.log("✅ Initialized trailrun");
+	console.log('- Attempting to initialize Trailrun Agent');
+	const logger = new Logger({ ...args });
+	const agentState = new AgentState();
+	const requestMonitor = new RequestMonitor(agentState, logger);
+
+	requestMonitor.instrumentHTTPTraffic();
+	console.log('- Successfully initialized Trailrun Agent');
 };
 
-export { LogPayload, trailrun };
+export { trailrun };
