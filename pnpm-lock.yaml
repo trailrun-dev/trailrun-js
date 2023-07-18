@@ -34,6 +34,7 @@ importers:
       '@types/luxon': ^3.0.1
       '@types/node': ^18.11.18
       '@types/shimmer': ^1.0.2
+      consola: ^3.2.3
       cross-fetch: ^3.1.5
       https: ^1.0.0
       luxon: ^3.0.3
@@ -43,6 +44,7 @@ importers:
       zod: ^3.20.2
     dependencies:
       '@mswjs/interceptors': 0.23.0
+      consola: 3.2.3
       cross-fetch: 3.1.5
       https: 1.0.0
       luxon: 3.2.0
@@ -572,6 +574,11 @@ packages:
   /concat-map/0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
     dev: true
+
+  /consola/3.2.3:
+    resolution: {integrity: sha512-I5qxpzLv+sJhTVEoLYNcTW+bThDCPsit0vLNKShZx6rLtpilNpmmeTPaeqJb9ZE9dV3DGaeby6Vuhrw38WjeyQ==}
+    engines: {node: ^14.18.0 || >=16.10.0}
+    dev: false
 
   /content-disposition/0.5.4:
     resolution: {integrity: sha512-FveZTNuGw04cxlAiWbzi6zTAL/lhehaWbTtgluJh4/E95DqMwTmha3KZN1aAWA8cFIhHzMZUvLevkw5Rqk+tSQ==}

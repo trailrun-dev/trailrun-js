@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { BatchManager } from '../../src/agent/BatchManager';
+import { Debugger } from '../../src/agent/Debugger';
 import { Logger } from '../../src/agent/Logger';
 
 describe('shouldSkipLog', () => {
 	it('should ignore a hostname if specified', () => {
-		const logger = new Logger({
+		const debug = new Debugger(false);
+
+		const logger = new Logger(debug, {
 			projectKey: 'test',
 			ignoredHostnames: ['api.stripe.com'],
 		});
@@ -15,13 +18,15 @@ describe('shouldSkipLog', () => {
 			},
 		} as any;
 
-		const batchManager = new BatchManager(logger);
+		const batchManager = new BatchManager(logger, debug);
 
 		expect(batchManager.shouldAddToBatch(logPayload)).toBe(false);
 	});
 
 	it('should not ignore a hostname unless specified', () => {
-		const logger = new Logger({
+		const debug = new Debugger(false);
+
+		const logger = new Logger(debug, {
 			projectKey: 'test',
 			ignoredHostnames: ['api.stripe.com'],
 		});
@@ -51,7 +56,7 @@ describe('shouldSkipLog', () => {
 			environment: 'development',
 		} as any;
 
-		const batchManager = new BatchManager(logger);
+		const batchManager = new BatchManager(logger, debug);
 
 		expect(batchManager.shouldAddToBatch(logPayload)).toBe(true);
 	});

@@ -1,2 +1,2 @@
-const API_BASE_URL = "https://api.trailrun.dev";
-export { API_BASE_URL };
+const INGESTION_BASE_URL = 'https://api.trailrun.dev';
+export { INGESTION_BASE_URL };

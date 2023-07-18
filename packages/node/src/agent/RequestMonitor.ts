@@ -1,20 +1,25 @@
 import { BatchInterceptor } from '@mswjs/interceptors';
 import { ClientRequestInterceptor } from '@mswjs/interceptors/ClientRequest';
+import { FetchInterceptor } from '@mswjs/interceptors/Fetch';
 import { XMLHttpRequestInterceptor } from '@mswjs/interceptors/XMLHttpRequest';
 import { InteractiveRequest } from '@mswjs/interceptors/src/utils/toInteractiveRequest';
 import { DateTime } from 'luxon';
 import { LogPayload } from '../types';
 import { isTrailrunRequest, normalizeOutgoingHeaders } from '../utils/headers';
 import { BatchManager } from './BatchManager';
+import { Debugger } from './Debugger';
 import { LatencyMap } from './LatencyMap';
+
 export class RequestMonitor {
 	latencyMap: LatencyMap;
 	batchManager: BatchManager;
 	environment: string;
+	debug: Debugger;
 
 	constructor(
 		latencyMap: LatencyMap,
 		batchManager: BatchManager,
+		debug: Debugger,
 		runtime: {
 			environment?: string;
 		},
@@ -22,6 +27,7 @@ export class RequestMonitor {
 		this.latencyMap = latencyMap;
 		this.batchManager = batchManager;
 		this.environment = runtime.environment ?? 'development';
+		this.debug = debug;
 	}
 
 	async handleHttpRequest(args: {
@@ -94,13 +100,19 @@ export class RequestMonitor {
 
 		if (this.batchManager.shouldAddToBatch(logPayload)) {
 			this.batchManager.addToBatch(logPayload);
+		} else {
+			this.debug.warn('Skipping log payload');
 		}
 	}
 
 	instrumentHTTPTraffic() {
 		const interceptor = new BatchInterceptor({
 			name: 'trailrun-interceptor',
-			interceptors: [new ClientRequestInterceptor(), new XMLHttpRequestInterceptor()],
+			interceptors: [
+				new ClientRequestInterceptor(),
+				new XMLHttpRequestInterceptor(),
+				new FetchInterceptor(),
+			],
 		});
 
 		interceptor.on('request', this.handleHttpRequest.bind(this));

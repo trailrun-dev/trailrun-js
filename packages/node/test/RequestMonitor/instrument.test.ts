@@ -8,8 +8,8 @@ const delay = (ms: number | undefined) => new Promise((res) => setTimeout(res, m
 describe('Should intercept requests', () => {
 	beforeAll(() => {
 		trailrun({
+			debug: false,
 			projectKey: 'tr_1234',
-			trailrunApiBaseUrl: 'http://localhost:8080',
 		});
 	});
 

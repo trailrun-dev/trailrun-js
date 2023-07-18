@@ -1,6 +1,6 @@
 {
-  "name": "@trailrun/node",
-  "version": "0.0.12",
+  "name": "trailrun",
+  "version": "0.0.1",
   "license": "MIT",
   "author": "Zev Stravitz",
   "scripts": {
@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mswjs/interceptors": "^0.23.0",
+    "consola": "^3.2.3",
     "cross-fetch": "^3.1.5",
     "https": "^1.0.0",
     "luxon": "^3.0.3",
