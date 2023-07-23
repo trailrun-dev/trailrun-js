@@ -1,5 +1,12 @@
 import { any, number, object, string, z } from 'zod';
 
+export type TrailrunConfig = {
+  projectKey: string /* The project key is used to authenticate with the Trailrun API */;
+  ignore?: string[] /* The ignore list is used to filter out requests to specific hostnames */;
+  debug?: boolean;
+  trailrunApiBaseUrl?: string /* The trailrun base url */;
+};
+
 const headerSchema = z.record(any());
 const bodySchema = z.record(any());
 
