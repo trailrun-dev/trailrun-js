@@ -56,8 +56,8 @@ export class BatchManager {
   }
 
   async flush(): Promise<void> {
-    this.debug.info(`Flushing batch of ${this.batch.length} log payloads`);
     if (this.batch.length > 0) {
+      this.debug.info(`Flushing batch of ${this.batch.length} log payloads`);
       try {
         await this.logger.emitBatch(this.batch);
         this.debug.success(`Successfully flushed batch of ${this.batch.length} log payloads`);
