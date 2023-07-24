@@ -5,8 +5,8 @@ import { FetchInterceptor } from '@mswjs/interceptors/fetch';
 import { InteractiveRequest } from '@mswjs/interceptors/src/utils/toInteractiveRequest';
 import { DateTime } from 'luxon';
 import { LogPayload } from '../types';
-import { isTrailrunRequest, normalizeHeaders } from '../utils/headers';
-import { readStream } from '../utils/stream';
+import { extractBodyAndHeaders } from '../utils/common';
+import { isTrailrunRequest } from '../utils/headers';
 import { BatchManager } from './BatchManager';
 import { Debugger } from './Debugger';
 import { LatencyMap } from './LatencyMap';
@@ -51,14 +51,10 @@ export class RequestMonitor {
 		if (!this.latencyMap.contains(requestId)) {
 			return;
 		}
-		const responseHeaders = normalizeHeaders(response.headers);
-		let responseBody = '';
-		if (response.body) {
-			responseBody = await readStream(
-				response.body.getReader(),
-				responseHeaders['content-encoding'],
-			);
-		}
+
+		const { body: responseBody, headers: responseHeaders } = await extractBodyAndHeaders(
+			response,
+		);
 
 		const payloadResponse: LogPayload['response'] = {
 			message: response.statusText,
@@ -67,14 +63,7 @@ export class RequestMonitor {
 			statusCode: response.status,
 		};
 
-		const requestHeaders = normalizeHeaders(request.headers);
-		let requestBody = '';
-		if (request.body) {
-			requestBody = await readStream(
-				request.body.getReader(),
-				requestHeaders['content-encoding'],
-			);
-		}
+		const { body: requestBody, headers: requestHeaders } = await extractBodyAndHeaders(request);
 
 		const urlInterface = new URL(request.url);
 
