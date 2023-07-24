@@ -11,7 +11,7 @@ export class BatchManager {
   private timer: NodeJS.Timeout | null;
   private debug: Debugger;
 
-  constructor(logger: Logger, debug: Debugger, maxSize = 50, interval = 1000) {
+  constructor(logger: Logger, debug: Debugger, maxSize = 50, interval = 5000) {
     this.debug = debug;
     this.batch = [];
     this.maxSize = maxSize;
