@@ -1,6 +1,6 @@
 {
   "name": "trailrun",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "MIT",
   "author": "Zev Stravitz",
   "scripts": {
@@ -20,6 +20,7 @@
     "@types/luxon": "^3.0.1",
     "@types/node": "^18.11.18",
     "@types/shimmer": "^1.0.2",
+    "axios": "^1.4.0",
     "turbo": "^1.6.3",
     "typescript": "^4.8.3",
     "vitest": "^0.26.2"

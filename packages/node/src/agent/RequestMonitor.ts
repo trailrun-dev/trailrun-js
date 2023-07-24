@@ -34,7 +34,6 @@ export class RequestMonitor {
     if (isTrailrunRequest(args.request)) {
       return;
     }
-
     this.latencyMap.setRequestResponse(args.requestId, DateTime.now().toISO());
   }
 
@@ -71,7 +70,7 @@ export class RequestMonitor {
     const payloadRequest: LogPayload['request'] = {
       method: request.method.toString() as LogPayload['request']['method'],
       hostname: urlInterface.hostname,
-      headers: normalizeOutgoingHeaders(request.headers as globalThis.Headers),
+      headers: normalizeOutgoingHeaders(request.headers),
       body: requestBody,
       search: urlInterface.search,
       pathname: urlInterface.pathname,

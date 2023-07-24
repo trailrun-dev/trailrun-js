@@ -1,18 +1,13 @@
-const normalizeOutgoingHeaders = (headers: globalThis.Headers) => {
-  const normalizedHeaders: Record<string, string> = {};
-  for (const [key, value] of Object.entries(headers)) {
-    if (Array.isArray(value)) {
-      normalizedHeaders[key] = value.join(";");
-    } else {
-      normalizedHeaders[key] = value?.toString() ?? "";
-    }
+export function normalizeOutgoingHeaders(headers: Headers) {
+  let headersObject: any = {};
+
+  for (let pair of headers.entries()) {
+    headersObject[pair[0]] = pair[1];
   }
 
-  return normalizedHeaders;
-};
-
-function isTrailrunRequest(request: Request) {
-  return request.headers.get("X-Trailrun-Client") != null;
+  return headersObject;
 }
 
-export { normalizeOutgoingHeaders, isTrailrunRequest };
+export function isTrailrunRequest(request: Request) {
+  return request.headers.get('X-Trailrun-Client') != null;
+}
