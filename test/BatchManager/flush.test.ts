@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
+import trailrun from '../../index';
 import { BatchManager } from '../../src/agent/BatchManager';
-import trailrun from '../../src/index';
 
 const delay = (ms: number | undefined) => new Promise((res) => setTimeout(res, ms));
 
