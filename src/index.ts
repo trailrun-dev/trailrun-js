@@ -7,6 +7,10 @@ import { TrailrunConfig } from './types';
 
 const trailrun = (args: TrailrunConfig): void => {
 	const debug = new Debugger(args.debug || false);
+	if (!args.projectKey) {
+		debug.warn('Trailrun is not initialized because the project key is missing.');
+	}
+
 	debug.info('Initializing Trailrun');
 	const logger = new Logger({
 		projectKey: args.projectKey,

@@ -1,15 +1,15 @@
 import { expect, test } from 'vitest';
-import { normalizeOutgoingHeaders } from '../../src/utils/headers';
+import { normalizeHeaders } from '../../src/utils/headers';
 
-test('normalizeOutgoingHeaders transforms empty Headers instance', () => {
+test('normalizeHeaders transforms empty Headers instance', () => {
 	const headers = new Headers();
 	const expected = {};
 
-	const result = normalizeOutgoingHeaders(headers);
+	const result = normalizeHeaders(headers);
 	expect(result).toEqual(expected);
 });
 
-test('normalizeOutgoingHeaders transforms single-entry Headers instance', () => {
+test('normalizeHeaders transforms single-entry Headers instance', () => {
 	const headers = new Headers();
 	headers.append('Content-Type', 'application/json');
 
@@ -17,11 +17,11 @@ test('normalizeOutgoingHeaders transforms single-entry Headers instance', () => 
 		'content-type': 'application/json',
 	};
 
-	const result = normalizeOutgoingHeaders(headers);
+	const result = normalizeHeaders(headers);
 	expect(result).toEqual(expected);
 });
 
-test('normalizeOutgoingHeaders transforms multi-entry Headers instance', () => {
+test('normalizeHeaders transforms multi-entry Headers instance', () => {
 	const headers = new Headers();
 	headers.append('Content-Type', 'application/json');
 	headers.append('Authorization', 'Bearer token');
@@ -31,6 +31,6 @@ test('normalizeOutgoingHeaders transforms multi-entry Headers instance', () => {
 		authorization: 'Bearer token',
 	};
 
-	const result = normalizeOutgoingHeaders(headers);
+	const result = normalizeHeaders(headers);
 	expect(result).toEqual(expected);
 });

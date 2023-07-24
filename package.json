@@ -1,6 +1,6 @@
 {
 	"name": "trailrun",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"license": "MIT",
 	"author": "Zev Stravitz",
 	"scripts": {
@@ -14,11 +14,13 @@
 		"cross-fetch": "^3.1.5",
 		"https": "^1.0.0",
 		"luxon": "^3.0.3",
+		"pako": "^2.1.0",
 		"zod": "^3.20.2"
 	},
 	"devDependencies": {
 		"@types/luxon": "^3.0.1",
 		"@types/node": "^18.11.18",
+		"@types/pako": "^2.0.0",
 		"@types/shimmer": "^1.0.2",
 		"axios": "^1.4.0",
 		"turbo": "^1.6.3",

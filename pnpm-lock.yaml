@@ -20,6 +20,9 @@ dependencies:
   luxon:
     specifier: ^3.0.3
     version: 3.0.3
+  pako:
+    specifier: ^2.1.0
+    version: 2.1.0
   zod:
     specifier: ^3.20.2
     version: 3.20.2
@@ -31,6 +34,9 @@ devDependencies:
   '@types/node':
     specifier: ^18.11.18
     version: 18.11.18
+  '@types/pako':
+    specifier: ^2.0.0
+    version: 2.0.0
   '@types/shimmer':
     specifier: ^1.0.2
     version: 1.0.2
@@ -305,6 +311,10 @@ packages:
 
   /@types/node@18.11.18:
     resolution: {integrity: sha512-DHQpWGjyQKSHj3ebjFI/wRKcqQcdR+MoFBygntYOZytCqNfkd2ZC4ARDJ2DQqhjH5p85Nnd3jhUJIXrszFX/JA==}
+    dev: true
+
+  /@types/pako@2.0.0:
+    resolution: {integrity: sha512-10+iaz93qR5WYxTo+PMifD5TSxiOtdRaxBf7INGGXMQgTCu8Z/7GYWYFUOS3q/G0nE5boj1r4FEB+WSy7s5gbA==}
     dev: true
 
   /@types/shimmer@1.0.2:
@@ -607,6 +617,10 @@ packages:
     dependencies:
       yocto-queue: 1.0.0
     dev: true
+
+  /pako@2.1.0:
+    resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
+    dev: false
 
   /pathe@1.1.1:
     resolution: {integrity: sha512-d+RQGp0MAYTIaDBIMmOfMwz3E+LOZnxx1HZd5R18mmCZY0QBlK0LDZfPc8FW8Ed2DlvsuE6PRjroDY+wg4+j/Q==}

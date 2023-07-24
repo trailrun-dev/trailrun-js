@@ -12,4 +12,8 @@ export class LatencyMap {
 	clearRequestResponse(requestId: string) {
 		this.requestResponseMap.delete(requestId);
 	}
+
+	contains(requestId: string) {
+		return this.requestResponseMap.has(requestId);
+	}
 }

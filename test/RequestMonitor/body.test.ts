@@ -1,16 +1,16 @@
 import { expect, test } from 'vitest';
-import { streamToString } from '../../src/utils/stream';
+import { readStream } from '../../src/utils/stream';
 
-test('streamToString transforms an empty stream', async () => {
+test('readStream transforms an empty stream', async () => {
 	const stream = {
 		read: async () => ({ value: undefined, done: true }),
 	};
 
-	const result = await streamToString(stream as any);
+	const result = await readStream(stream as any, null);
 	expect(result).toBe('');
 });
 
-test('streamToString transforms a non-empty stream', async () => {
+test('readStream transforms a non-empty stream', async () => {
 	const string = 'Hello, world!';
 	const encoder = new TextEncoder();
 	const data = encoder.encode(string);
@@ -28,6 +28,6 @@ test('streamToString transforms a non-empty stream', async () => {
 		},
 	};
 
-	const result = await streamToString(stream as any);
+	const result = await readStream(stream as any, null);
 	expect(result).toBe(string);
 });

@@ -5,8 +5,8 @@ import { FetchInterceptor } from '@mswjs/interceptors/fetch';
 import { InteractiveRequest } from '@mswjs/interceptors/src/utils/toInteractiveRequest';
 import { DateTime } from 'luxon';
 import { LogPayload } from '../types';
-import { isTrailrunRequest, normalizeOutgoingHeaders } from '../utils/headers';
-import { streamToString } from '../utils/stream';
+import { isTrailrunRequest, normalizeHeaders } from '../utils/headers';
+import { readStream } from '../utils/stream';
 import { BatchManager } from './BatchManager';
 import { Debugger } from './Debugger';
 import { LatencyMap } from './LatencyMap';
@@ -38,7 +38,7 @@ export class RequestMonitor {
 		if (isTrailrunRequest(args.request)) {
 			return;
 		}
-		this.latencyMap.setRequestResponse(args.requestId, DateTime.now().toISO());
+		this.latencyMap.setRequestResponse(args.requestId, DateTime.utc().toISO());
 	}
 
 	async handleHttpResponse(args: {
@@ -48,33 +48,40 @@ export class RequestMonitor {
 		requestId: string;
 	}): Promise<void> {
 		const { response, request, requestId } = args;
-		if (isTrailrunRequest(request)) {
+		if (!this.latencyMap.contains(requestId)) {
 			return;
 		}
-
+		const responseHeaders = normalizeHeaders(response.headers);
 		let responseBody = '';
-		if (response.body && response.bodyUsed) {
-			responseBody = await streamToString(response.body.getReader());
+		if (response.body) {
+			responseBody = await readStream(
+				response.body.getReader(),
+				responseHeaders['content-encoding'],
+			);
 		}
 
 		const payloadResponse: LogPayload['response'] = {
 			message: response.statusText,
 			body: responseBody,
-			headers: response.headers,
+			headers: responseHeaders,
 			statusCode: response.status,
 		};
 
+		const requestHeaders = normalizeHeaders(request.headers);
 		let requestBody = '';
-		if (request.body && request.bodyUsed) {
-			requestBody = await streamToString(request.body.getReader());
+		if (request.body) {
+			requestBody = await readStream(
+				request.body.getReader(),
+				requestHeaders['content-encoding'],
+			);
 		}
 
 		const urlInterface = new URL(request.url);
 
 		const payloadRequest: LogPayload['request'] = {
-			method: request.method.toString() as LogPayload['request']['method'],
+			method: request.method as LogPayload['request']['method'],
 			hostname: urlInterface.hostname,
-			headers: normalizeOutgoingHeaders(request.headers),
+			headers: requestHeaders,
 			body: requestBody,
 			search: urlInterface.search,
 			pathname: urlInterface.pathname,
@@ -92,7 +99,7 @@ export class RequestMonitor {
 			request: payloadRequest,
 			response: payloadResponse,
 			callAt,
-			latencyInMilliseconds: DateTime.now().toMillis() - DateTime.fromISO(callAt).toMillis(),
+			latencyInMilliseconds: DateTime.utc().toMillis() - DateTime.fromISO(callAt).toMillis(),
 			environment: this.environment,
 		};
 
