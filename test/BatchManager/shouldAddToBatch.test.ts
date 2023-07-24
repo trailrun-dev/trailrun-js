@@ -7,9 +7,9 @@ describe('shouldSkipLog', () => {
 	it('should ignore a hostname if specified', () => {
 		const debug = new Debugger(false);
 
-		const logger = new Logger(debug, {
+		const logger = new Logger({
 			projectKey: 'test',
-			ignoredHostnames: ['api.stripe.com'],
+			ignore: ['api.stripe.com'],
 		});
 
 		const logPayload = {
@@ -26,9 +26,9 @@ describe('shouldSkipLog', () => {
 	it('should not ignore a hostname unless specified', () => {
 		const debug = new Debugger(false);
 
-		const logger = new Logger(debug, {
+		const logger = new Logger({
 			projectKey: 'test',
-			ignoredHostnames: ['api.stripe.com'],
+			ignore: ['api.stripe.com'],
 		});
 
 		const logPayload = {
