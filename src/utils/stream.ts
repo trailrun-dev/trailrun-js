@@ -60,6 +60,7 @@ export function shouldStreamBody(contentType: string | null): boolean {
 		'text/css',
 		'text/csv',
 		'application/json',
+		'application/x-ndjson',
 		'application/javascript',
 		'application/xml',
 		'application/sql',

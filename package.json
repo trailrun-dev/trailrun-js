@@ -1,6 +1,6 @@
 {
 	"name": "trailrun",
-	"version": "0.0.10",
+	"version": "0.0.13",
 	"license": "MIT",
 	"author": "Zev Stravitz",
 	"scripts": {

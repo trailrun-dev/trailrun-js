@@ -1,4 +1,5 @@
 import { LogPayload, logPayloadSchema } from '../types';
+import { shouldIgnoreHostname } from '../utils/hostnames';
 import { Debugger } from './Debugger';
 import { Logger } from './Logger';
 
@@ -14,19 +15,23 @@ export class BatchManager {
 	constructor(
 		logger: Logger,
 		debug: Debugger,
-		maxSize = 50,
-		interval = process.env.NODE_ENV === 'test' ? 100 : 5000,
+		config: {
+			maxSize?: number;
+			interval?: number;
+			ignoredHostnames: string[] | undefined;
+		},
 	) {
 		this.debug = debug;
 		this.batch = [];
-		this.maxSize = maxSize;
-		this.interval = interval;
+		this.maxSize = config.maxSize ?? 50;
+		this.interval = config.interval ?? (process.env.NODE_ENV === 'test' ? 100 : 5000);
 		this.logger = logger;
 		this.timer = null;
+		this.ignoredHostnames = config.ignoredHostnames ?? [];
 	}
 
 	startTimer(): void {
-		this.timer = setInterval(() => this.flush(), this.interval);
+		this.timer = setInterval(async () => await this.flush(), this.interval);
 	}
 
 	shouldAddToBatch(logPayload: LogPayload): boolean {
@@ -39,7 +44,7 @@ export class BatchManager {
 		// Skip logging if the hostname is in the ignored list
 		if (
 			logPayload.request.hostname &&
-			this.ignoredHostnames.includes(logPayload.request.hostname)
+			shouldIgnoreHostname(logPayload.request.hostname, this.ignoredHostnames)
 		) {
 			return false;
 		}

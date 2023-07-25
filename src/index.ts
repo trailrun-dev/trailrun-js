@@ -18,7 +18,9 @@ const trailrun = (args: TrailrunConfig): void => {
 		trailrunApiBaseUrl: args.trailrunApiBaseUrl,
 	});
 	const latencyMap = new LatencyMap();
-	const batchManager = new BatchManager(logger, debug);
+	const batchManager = new BatchManager(logger, debug, {
+		ignoredHostnames: args.ignore,
+	});
 	const requestMonitor = new RequestMonitor(latencyMap, batchManager, debug, {
 		environment: process.env.NODE_ENV,
 	});
