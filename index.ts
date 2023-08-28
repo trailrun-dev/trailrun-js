@@ -1,2 +1,2 @@
-export { default } from './src';
+export * from './src/index';
 export * from './src/types';
