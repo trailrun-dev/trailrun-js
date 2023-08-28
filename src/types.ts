@@ -1,4 +1,4 @@
-import { any, number, object, string, z } from 'zod';
+import { number, object, string, z } from 'zod';
 
 export type TrailrunConfig = {
 	projectKey: string /* The project key is used to authenticate with the Trailrun API */;
@@ -7,8 +7,7 @@ export type TrailrunConfig = {
 	trailrunApiBaseUrl?: string /* The trailrun base url */;
 };
 
-const headerSchema = z.record(any());
-const bodySchema = z.record(any());
+const headerSchema = z.record(string());
 
 const logPayloadSchema = object({
 	request: object({

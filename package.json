@@ -1,6 +1,6 @@
 {
 	"name": "trailrun",
-	"version": "0.0.13",
+	"version": "0.0.14-beta.1",
 	"license": "MIT",
 	"author": "Zev Stravitz",
 	"scripts": {
@@ -32,7 +32,7 @@
 	"files": [
 		"dist"
 	],
-	"description": "Client for nodejs",
+	"description": "SDK for nodejs",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/trailrun-dev/trailrun-client.git"

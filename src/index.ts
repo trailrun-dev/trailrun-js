@@ -5,7 +5,7 @@ import { Logger } from './agent/Logger';
 import { RequestMonitor } from './agent/RequestMonitor';
 import { TrailrunConfig } from './types';
 
-const trailrun = (args: TrailrunConfig): void => {
+export default function (args: TrailrunConfig): void {
 	const debug = new Debugger(args.debug || false);
 	if (!args.projectKey) {
 		debug.warn('Trailrun is not initialized because the project key is missing.');
@@ -27,6 +27,4 @@ const trailrun = (args: TrailrunConfig): void => {
 
 	requestMonitor.instrumentHTTPTraffic();
 	debug.ready('Trailrun is initialized');
-};
-
-export default trailrun;
+}

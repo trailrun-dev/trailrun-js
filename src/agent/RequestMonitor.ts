@@ -82,13 +82,12 @@ export class RequestMonitor {
 			return;
 		}
 
-		const { callAt } = requestObject;
-
 		const logPayload: LogPayload = {
 			request: payloadRequest,
 			response: payloadResponse,
-			callAt,
-			latencyInMilliseconds: DateTime.utc().toMillis() - DateTime.fromISO(callAt).toMillis(),
+			callAt: requestObject.callAt,
+			latencyInMilliseconds:
+				DateTime.utc().toMillis() - DateTime.fromISO(requestObject.callAt).toMillis(),
 			environment: this.environment,
 		};
 
