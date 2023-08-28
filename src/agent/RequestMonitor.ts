@@ -38,7 +38,7 @@ export class RequestMonitor {
 		if (isTrailrunRequest(args.request)) {
 			return;
 		}
-		this.latencyMap.setRequestResponse(args.requestId, DateTime.utc().toISO());
+		this.latencyMap.setRequestResponse(args.requestId, DateTime.utc().toISO() as string);
 	}
 
 	async handleHttpResponse(args: {

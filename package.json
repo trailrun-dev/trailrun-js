@@ -1,9 +1,8 @@
 {
 	"name": "trailrun",
-	"version": "0.0.14-beta.1",
+	"version": "0.0.14",
 	"license": "MIT",
 	"author": "Zev Stravitz",
-	"type": "module",
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"test": "vitest test",
