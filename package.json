@@ -1,6 +1,6 @@
 {
 	"name": "trailrun",
-	"version": "0.0.14-beta.7",
+	"version": "0.0.14",
 	"license": "MIT",
 	"author": "Zev Stravitz",
 	"main": "./dist/index.js",
